@@ -1,0 +1,10 @@
+# Terraform & AWS Secrets (CRITICAL: -10 marks if committed!)
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+*.pem
+.env
+.env.*
+__pycache__/
+node_modules/
