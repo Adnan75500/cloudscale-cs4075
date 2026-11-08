@@ -1,0 +1,13 @@
+
+.env
+*.pem
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl.bak
+build/
+*.zip
+__pycache__/
+.venv/
+.aws/
+credentials
