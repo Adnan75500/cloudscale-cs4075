@@ -1,51 +1,48 @@
 
 # AI-DLC Development Log
 
-## Project Information
+## Phase 1: Project Setup
 
-- Project Name: CloudScale
-- Development Approach: AI-Driven Development Life Cycle
-- Repository: cloudscale
+**Inception** (date):
+- Prompt given to the agent:
+- Requirements produced:
+- Questions asked by the agent:
+- Our answers:
 
-## Development Log
+**Construction** (date):
+- Plan proposed by the agent:
+- What we reviewed:
+- What we changed or rejected:
+- What we approved and applied:
 
-### Entry 1: Project Initialization
+**Operations** (date):
+- What was actually built:
+- AWS resource names:
+- Issues found:
+- Decisions to remember:
 
-**Date:** YYYY-MM-DD
-
-**Phase:** Planning and Setup
-
-**Work Completed:**
-- Created the CloudScale Git repository.
-- Established the project folder structure.
-- Created the README.md file.
-- Configured the .gitignore file.
-
-**AI Assistance:**
-- Used AI assistance to plan the repository structure.
-- Used AI assistance to prepare project documentation.
-
-**Human Decisions and Verification:**
-- Reviewed the generated folder structure.
-- Verified the Git repository initialization.
-- Reviewed the documentation before committing.
-
-**Challenges:**
-- None currently.
-
-**Next Steps:**
-- Begin AWS infrastructure development using Terraform.
+**Commit:** <commit hash or PR link>
 
 ---
 
-## Future Entries
+## Phase 2: Infrastructure Development
 
-For every development session, document:
+**Inception** (date):
+- Prompt given to the agent:
+- Requirements produced:
+- Questions asked by the agent:
+- Our answers:
 
-- Date
-- Development phase
-- Tasks completed
-- AI tools and assistance used
-- Human decisions and verification
-- Challenges encountered
-- Next steps
+**Construction** (date):
+- Plan proposed by the agent:
+- What we reviewed:
+- What we changed or rejected:
+- What we approved and applied:
+
+**Operations** (date):
+- What was actually built:
+- AWS resource names:
+- Issues found:
+- Decisions to remember:
+
+**Commit:** <commit hash or PR link>
