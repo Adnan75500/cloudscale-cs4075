@@ -14,7 +14,9 @@ python3.11 -m venv venv
 ./venv/bin/pip install -r requirements.txt
 
 cat > /etc/app.env <<EOF
-AWS_REGION=${region}
+%{ for k, v in env ~}
+${k}=${v}
+%{ endfor ~}
 EOF
 
 cat > /etc/systemd/system/app.service <<EOF

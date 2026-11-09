@@ -65,6 +65,7 @@ resource "aws_launch_template" "app" {
   user_data = base64encode(templatefile("${path.module}/app_userdata.sh.tpl", {
     code_bucket = aws_s3_bucket.code.id
     region      = var.region
+    env         = local.app_env
   }))
 
   iam_instance_profile {
