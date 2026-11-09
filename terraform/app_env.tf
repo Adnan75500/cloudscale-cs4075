@@ -15,5 +15,8 @@ locals {
 
     QUEUE_URL = aws_sqs_queue.responses.url
     TOPIC_ARN = aws_sns_topic.responses.arn
+
+    SM_ENDPOINT   = "cloudscale-category"
+    BEDROCK_MODEL = var.bedrock_model_id
   }
 }

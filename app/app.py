@@ -4,7 +4,7 @@ from functools import wraps
 from urllib.parse import urlencode
 
 import boto3, jwt, requests
-from flask import Flask, request, session, redirect, render_template, abort
+from flask import Flask, request, session, redirect, render_template, abort, jsonify
 
 REGION = os.environ["AWS_REGION"]
 
@@ -13,6 +13,10 @@ TOPIC_ARN = os.environ["TOPIC_ARN"]
 
 sqs = boto3.client("sqs", region_name=REGION)
 sns = boto3.client("sns", region_name=REGION)
+SM_ENDPOINT = os.environ["SM_ENDPOINT"]
+smrt = boto3.client("sagemaker-runtime", region_name=REGION)
+BEDROCK_MODEL = os.environ["BEDROCK_MODEL"]
+brt = boto3.client("bedrock-runtime", region_name=REGION)
 TABLE = os.environ["TABLE_NAME"]
 MEDIA_BUCKET = os.environ["MEDIA_BUCKET"]
 CDN = os.environ["CDN_DOMAIN"]
@@ -210,3 +214,46 @@ def respond(lid):
     )
 
     return redirect(f"/listing/{lid}")
+
+
+@app.post("/api/suggest-category")
+@login_required
+def suggest_category():
+    text = request.get_json(force=True).get("text", "")[:500]
+    try:
+        r = smrt.invoke_endpoint(
+            EndpointName=SM_ENDPOINT,
+            ContentType="application/json",
+            Accept="application/json",
+            Body=json.dumps({"text": text}),
+        )
+        return jsonify(json.loads(r["Body"].read()))
+    except Exception as e:
+        app.logger.error("sagemaker call failed: %s", e)
+        return jsonify({"error": "Category model is unavailable right now"}), 503
+
+
+@app.post("/api/write-description")
+@login_required
+def write_description():
+    d = request.get_json(force=True)
+    prompt = (
+        "Write a clear, friendly description of 2 to 3 sentences for a campus "
+        + str(d.get("kind", "lost"))[:10] + "-and-found listing. "
+        "Item: " + str(d.get("title", ""))[:120] + ". "
+        "Category: " + str(d.get("category", ""))[:30] + ". "
+        "Extra details from the user: " + str(d.get("notes", ""))[:300] + ". "
+        "Only use the details given. Do not invent details and do not include contact information."
+    )
+    try:
+        r = brt.converse(
+            modelId=BEDROCK_MODEL,
+            messages=[{"role": "user", "content": [{"text": prompt}]}],
+            inferenceConfig={"maxTokens": 200, "temperature": 0.4},
+        )
+        text = r["output"]["message"]["content"][0]["text"].strip()
+        return jsonify({"description": text})
+    except Exception as e:
+        app.logger.error("bedrock call failed: %s", e)
+        return jsonify({"error": "Description generator is unavailable right now"}), 503
+

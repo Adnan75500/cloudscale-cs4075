@@ -42,6 +42,16 @@ resource "aws_iam_role_policy" "ec2_app" {
     Statement = [
       {
         Effect   = "Allow"
+        Action   = ["sagemaker:InvokeEndpoint"]
+        Resource = "arn:aws:sagemaker:${var.region}:${data.aws_caller_identity.me.account_id}:endpoint/cloudscale-category"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["bedrock:InvokeModel"]
+        Resource = "arn:aws:bedrock:${var.region}::foundation-model/${var.bedrock_model_id}"
+      },
+      {
+        Effect   = "Allow"
         Action   = ["sqs:SendMessage"]
         Resource = aws_sqs_queue.responses.arn
       },

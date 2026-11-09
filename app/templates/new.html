@@ -9,6 +9,28 @@
   </select>
   <textarea name="description" id="description" rows="4" placeholder="Description"></textarea>
   <input type="file" name="photo" accept="image/png,image/jpeg">
+  <button type="button" onclick="suggest()">Suggest category</button>
+  <button type="button" onclick="writeDesc()">Write description</button>
   <button type="submit">Post</button>
 </form>
+<script>
+async function call(url, body) {
+  const r = await fetch(url, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(body)});
+  return r.json();
+}
+async function suggest() {
+  const text = document.getElementById("title").value + " " + document.getElementById("description").value;
+  const d = await call("/api/suggest-category", {text: text});
+  if (d.category) { document.getElementById("category").value = d.category; } else { alert(d.error || "Failed"); }
+}
+async function writeDesc() {
+  const d = await call("/api/write-description", {
+    title: document.getElementById("title").value,
+    category: document.getElementById("category").value,
+    kind: document.querySelector("select[name=kind]").value,
+    notes: document.getElementById("description").value
+  });
+  if (d.description) { document.getElementById("description").value = d.description; } else { alert(d.error || "Failed"); }
+}
+</script>
 {% endblock %}
