@@ -3,5 +3,6 @@ locals {
     AWS_REGION   = var.region
     MEDIA_BUCKET = aws_s3_bucket.media.id
     CDN_DOMAIN   = aws_cloudfront_distribution.media.domain_name
+    TABLE_NAME   = aws_dynamodb_table.listings.name
   }
 }

@@ -1,4 +1,4 @@
-    output "media_bucket_name" {
+output "media_bucket_name" {
   description = "Name of the private S3 media bucket"
   value       = aws_s3_bucket.media.id
 }

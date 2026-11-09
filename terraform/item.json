@@ -1,0 +1,4 @@
+{
+  "listing_id": {"S": "test1"},
+  "title": {"S": "hello"}
+}

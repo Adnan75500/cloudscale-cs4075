@@ -40,10 +40,34 @@ resource "aws_iam_role_policy" "ec2_app" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+
+      {
+        Effect = "Allow"
+
+        Action = [
+          "dynamodb:PutItem",
+          "dynamodb:GetItem",
+          "dynamodb:UpdateItem",
+          "dynamodb:Scan",
+          "dynamodb:DeleteItem"
+        ]
+
+        Resource = aws_dynamodb_table.listings.arn
+      },
+
       {
         Effect   = "Allow"
         Action   = ["s3:GetObject"]
         Resource = "${aws_s3_bucket.code.arn}/app.zip"
+      },
+      {
+        Effect = "Allow"
+
+        Action = [
+          "s3:PutObject"
+        ]
+
+        Resource = "${aws_s3_bucket.media.arn}/uploads/*"
       }
     ]
   })
