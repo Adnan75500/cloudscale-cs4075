@@ -7,3 +7,22 @@
 <h3>Responses</h3>
 {% for r in i.responses %}<p><b>{{ r.from }}</b>: {{ r.message }}</p>{% else %}<p>None yet.</p>{% endfor %}
 {% endblock %}
+<hr>
+
+<h3>Respond to this listing</h3>
+
+{% if user %}
+<form method="post" action="/listing/{{ i.listing_id }}/respond">
+  <textarea
+    name="message"
+    rows="3"
+    placeholder="I think this is mine / I have your item"
+    required
+  ></textarea>
+
+  <button type="submit">Respond</button>
+</form>
+
+{% else %}
+<p><a href="/login">Log in</a> to respond.</p>
+{% endif %}

@@ -42,6 +42,16 @@ resource "aws_iam_role_policy" "ec2_app" {
     Statement = [
       {
         Effect   = "Allow"
+        Action   = ["sqs:SendMessage"]
+        Resource = aws_sqs_queue.responses.arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["sns:Subscribe"]
+        Resource = aws_sns_topic.responses.arn
+      },
+      {
+        Effect   = "Allow"
         Action   = ["kms:Decrypt"]
         Resource = data.aws_kms_alias.ssm.target_key_arn
       },

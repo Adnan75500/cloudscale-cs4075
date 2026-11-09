@@ -12,5 +12,8 @@ locals {
     APP_URL           = "https://${aws_cloudfront_distribution.app.domain_name}"
 
     SECRET_PARAM = aws_ssm_parameter.flask_key.name
+
+    QUEUE_URL = aws_sqs_queue.responses.url
+    TOPIC_ARN = aws_sns_topic.responses.arn
   }
 }

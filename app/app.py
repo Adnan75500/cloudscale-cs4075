@@ -1,4 +1,5 @@
 import os, uuid, secrets, datetime
+import json
 from functools import wraps
 from urllib.parse import urlencode
 
@@ -6,6 +7,12 @@ import boto3, jwt, requests
 from flask import Flask, request, session, redirect, render_template, abort
 
 REGION = os.environ["AWS_REGION"]
+
+QUEUE_URL = os.environ["QUEUE_URL"]
+TOPIC_ARN = os.environ["TOPIC_ARN"]
+
+sqs = boto3.client("sqs", region_name=REGION)
+sns = boto3.client("sns", region_name=REGION)
 TABLE = os.environ["TABLE_NAME"]
 MEDIA_BUCKET = os.environ["MEDIA_BUCKET"]
 CDN = os.environ["CDN_DOMAIN"]
@@ -142,6 +149,19 @@ def new():
         "created_at": datetime.datetime.utcnow().isoformat(),
         "responses": [],
     })
+    try:
+        sns.subscribe(
+            TopicArn=TOPIC_ARN,
+            Protocol="email",
+            Endpoint=user["email"],
+            Attributes={
+                "FilterPolicy": json.dumps({
+                    "owner_email": [user["email"]]
+                })
+            },
+        )
+    except Exception as e:
+        app.logger.warning("sns subscribe failed: %s", e)
     return redirect(f"/listing/{lid}")
 
 
@@ -151,3 +171,42 @@ def listing(lid):
     if not item:
         abort(404)
     return render_template("listing.html", i=item)
+
+@app.post("/listing/<lid>/respond")
+@login_required
+def respond(lid):
+    item = table.get_item(Key={"listing_id": lid}).get("Item")
+
+    if not item:
+        abort(404)
+
+    user = current_user()
+    msg = request.form["message"][:500]
+
+    resp = {
+        "from": user["email"],
+        "message": msg,
+        "at": datetime.datetime.utcnow().isoformat()
+    }
+
+    table.update_item(
+        Key={"listing_id": lid},
+        UpdateExpression="SET responses = list_append(if_not_exists(responses, :empty), :r)",
+        ExpressionAttributeValues={
+            ":r": [resp],
+            ":empty": []
+        },
+    )
+
+    sqs.send_message(
+        QueueUrl=QUEUE_URL,
+        MessageBody=json.dumps({
+            "title": item["title"],
+            "owner_email": item["owner_email"],
+            "responder_email": user["email"],
+            "message": msg,
+            "url": f"{APP_URL}/listing/{lid}",
+        })
+    )
+
+    return redirect(f"/listing/{lid}")
