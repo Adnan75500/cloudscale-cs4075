@@ -1,0 +1,44 @@
+
+#!/bin/bash
+set -e
+
+dnf install -y python3.11 python3.11-pip unzip
+
+cd /opt
+aws s3 cp s3://cloudscale-code-764277693415/app.zip app.zip --region us-east-1
+
+unzip -o app.zip -d /opt
+cd /opt/app
+
+python3.11 -m venv venv
+./venv/bin/pip install -r requirements.txt
+
+cat > /etc/app.env <<EOF
+APP_URL=https://d2oszhh0246ohl.cloudfront.net
+AWS_REGION=us-east-1
+CDN_DOMAIN=d1ap05xd4b5z8l.cloudfront.net
+COGNITO_CLIENT_ID=50jb7l57b5mik3d0d6m0vph0g9
+COGNITO_DOMAIN=https://cloudscale-764277693415.auth.us-east-1.amazoncognito.com
+COGNITO_POOL_ID=us-east-1_4TkwOWbFa
+MEDIA_BUCKET=cloudscale-media-764277693415
+SECRET_PARAM=/cloudscale/flask-secret-key
+TABLE_NAME=cloudscale-listings
+EOF
+
+cat > /etc/systemd/system/app.service <<EOF
+[Unit]
+Description=CloudScale app
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/app
+EnvironmentFile=/etc/app.env
+ExecStart=/opt/app/venv/bin/gunicorn -b 0.0.0.0:8000 -w 2 app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
+systemctl enable --now app

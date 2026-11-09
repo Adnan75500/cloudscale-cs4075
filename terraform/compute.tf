@@ -40,7 +40,11 @@ resource "aws_iam_role_policy" "ec2_app" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
-
+      {
+        Effect   = "Allow"
+        Action   = ["kms:Decrypt"]
+        Resource = data.aws_kms_alias.ssm.target_key_arn
+      },
       {
         Effect = "Allow"
 
@@ -54,7 +58,11 @@ resource "aws_iam_role_policy" "ec2_app" {
 
         Resource = aws_dynamodb_table.listings.arn
       },
-
+      {
+        Effect   = "Allow"
+        Action   = ["ssm:GetParameter"]
+        Resource = aws_ssm_parameter.flask_key.arn
+      },
       {
         Effect   = "Allow"
         Action   = ["s3:GetObject"]

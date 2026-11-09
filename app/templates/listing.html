@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>{{ i.kind|upper }}: {{ i.title }}</h2>
+{% if i.photo_key %}<img src="https://{{ cdn }}/{{ i.photo_key }}" style="max-width:100%">{% endif %}
+<p>{{ i.description }}</p>
+<p><small>Category: {{ i.category }} | Status: {{ i.status }}</small></p>
+<h3>Responses</h3>
+{% for r in i.responses %}<p><b>{{ r.from }}</b>: {{ r.message }}</p>{% else %}<p>None yet.</p>{% endfor %}
+{% endblock %}

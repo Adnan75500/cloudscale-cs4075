@@ -1,0 +1,459 @@
+﻿[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[2J[01;01H[=3h[2J[01;01H[0m[35m[40m[2J[01;01H[=3h[2J[01;01H[0m[37m[40m  Booting `Amazon Linux (6.18.56-125.164.amzn2023.x86_64) 2023'
+
+
+
+[    2.806625] systemd[1]: Started systemd-journald.service - Journal Service.
+
+[    2.806768] device-mapper: core: CONFIG_IMA_DISABLE_HTABLE is disabled. Duplicate IMA measurements will not be recorded in the IMA log.
+
+[    2.809169] device-mapper: uevent: version 1.0.3
+
+[    2.811962] device-mapper: ioctl: 4.50.0-ioctl (2025-04-28) initialised: dm-devel@lists.linux.dev
+
+[    2.814127] fuse: init (API version 7.45)
+
+[    2.884109] systemd-journald[1122]: Received client request to flush runtime journal.
+
+[    3.152945] RPC: Registered named UNIX socket transport module.
+
+[    3.153660] RPC: Registered udp transport module.
+
+[    3.154285] RPC: Registered tcp transport module.
+
+[    3.154920] RPC: Registered tcp-with-tls transport module.
+
+[    3.155665] RPC: Registered tcp NFSv4.1 backchannel transport module.
+
+[    3.306121] input: Power Button as /devices/LNXSYSTM:00/LNXPWRBN:00/input/input0
+
+[    3.309908] ena 0000:00:05.0: Elastic Network Adapter (ENA) v2.17.4g
+
+[    3.321963] ena 0000:00:05.0: ENA device version: 0.10
+
+[    3.322560] ena 0000:00:05.0: ENA controller version: 0.0.1 implementation version 1
+
+[    3.328478] i8042: PNP: PS/2 Controller [PNP0303:KBD,PNP0f13:MOU] at 0x60,0x64 irq 1,12
+
+[    3.329673] i8042: Warning: Keylock active
+
+[    3.332060] serio: i8042 KBD port at 0x60,0x64 irq 1
+
+[    3.332610] serio: i8042 AUX port at 0x60,0x64 irq 12
+
+[    3.342802] ACPI: button: Power Button [PWRF]
+
+[    3.343358] input: Sleep Button as /devices/LNXSYSTM:00/LNXSLPBN:00/input/input1
+
+[    3.345073] ACPI: button: Sleep Button [SLPF]
+
+[    3.402780] ena 0000:00:05.0: LLQ is not supported Fallback to host mode policy.
+
+[    3.417079] ena 0000:00:05.0: Elastic Network Adapter (ENA) found at mem 80400000, mac addr 02:ff:e6:1d:2e:37
+
+[    3.436283] ena 0000:00:05.0 ens5: renamed from eth0
+
+[    3.501067] nvme nvme0: using unchecked data buffer
+
+[    3.618199] zram_generator::config[1691]: zram0: system has too much memory (913MB), limit is 800MB, ignoring.
+
+[    5.395823] cloud-init[1849]: Cloud-init v. 22.2.2 running 'init' at Sun, 08 Nov 2026 18:00:39 +0000. Up 5.36 seconds.
+
+[    5.474722] cloud-init[1849]: ci-info: ++++++++++++++++++++++++++++++++++++++Net device info++++++++++++++++++++++++++++++++++++++
+
+[    5.476962] cloud-init[1849]: ci-info: +--------+------+----------------------------+---------------+--------+-------------------+
+
+[    5.478892] cloud-init[1849]: ci-info: | Device |  Up  |          Address           |      Mask     | Scope  |     Hw-Address    |
+
+[    5.480894] cloud-init[1849]: ci-info: +--------+------+----------------------------+---------------+--------+-------------------+
+
+[    5.482770] cloud-init[1849]: ci-info: |  ens5  | True |         10.0.0.178         | 255.255.255.0 | global | 02:ff:e6:1d:2e:37 |
+
+[    5.484712] cloud-init[1849]: ci-info: |  ens5  | True | fe80::ff:e6ff:fe1d:2e37/64 |       .       |  link  | 02:ff:e6:1d:2e:37 |
+
+[    5.486635] cloud-init[1849]: ci-info: |   lo   | True |         127.0.0.1          |   255.0.0.0   |  host  |         .         |
+
+[    5.489251] cloud-init[1849]: ci-info: |   lo   | True |          ::1/128           |       .       |  host  |         .         |
+
+[    5.491162] cloud-init[1849]: ci-info: +--------+------+----------------------------+---------------+--------+-------------------+
+
+[    5.493085] cloud-init[1849]: ci-info: ++++++++++++++++++++++++++++Route IPv4 info+++++++++++++++++++++++++++++
+
+[    5.494652] cloud-init[1849]: ci-info: +-------+-------------+----------+-----------------+-----------+-------+
+
+[    5.496285] cloud-init[1849]: ci-info: | Route | Destination | Gateway  |     Genmask     | Interface | Flags |
+
+[    5.497887] cloud-init[1849]: ci-info: +-------+-------------+----------+-----------------+-----------+-------+
+
+[    5.499548] cloud-init[1849]: ci-info: |   0   |   0.0.0.0   | 10.0.0.1 |     0.0.0.0     |    ens5   |   UG  |
+
+[    5.501177] cloud-init[1849]: ci-info: |   1   |   10.0.0.0  | 0.0.0.0  |  255.255.255.0  |    ens5   |   U   |
+
+[    5.502799] cloud-init[1849]: ci-info: |   2   |   10.0.0.1  | 0.0.0.0  | 255.255.255.255 |    ens5   |   UH  |
+
+[    5.504400] cloud-init[1849]: ci-info: |   3   |   10.0.0.2  | 0.0.0.0  | 255.255.255.255 |    ens5   |   UH  |
+
+[    5.505988] cloud-init[1849]: ci-info: +-------+-------------+----------+-----------------+-----------+-------+
+
+[    5.507522] cloud-init[1849]: ci-info: +++++++++++++++++++Route IPv6 info+++++++++++++++++++
+
+[    5.509073] cloud-init[1849]: ci-info: +-------+-------------+---------+-----------+-------+
+
+[    5.510517] cloud-init[1849]: ci-info: | Route | Destination | Gateway | Interface | Flags |
+
+[    5.511923] cloud-init[1849]: ci-info: +-------+-------------+---------+-----------+-------+
+
+[    5.513339] cloud-init[1849]: ci-info: |   0   |  fe80::/64  |    ::   |    ens5   |   U   |
+
+[    5.514684] cloud-init[1849]: ci-info: |   2   |    local    |    ::   |    ens5   |   U   |
+
+[    5.516025] cloud-init[1849]: ci-info: |   3   |  multicast  |    ::   |    ens5   |   U   |
+
+[    5.517424] cloud-init[1849]: ci-info: +-------+-------------+---------+-----------+-------+
+
+[    6.539766] cloud-init[1849]: Generating public/private ed25519 key pair.
+
+[    6.541238] cloud-init[1849]: Your identification has been saved in /etc/ssh/ssh_host_ed25519_key
+
+[    6.542977] cloud-init[1849]: Your public key has been saved in /etc/ssh/ssh_host_ed25519_key.pub
+
+[    6.544684] cloud-init[1849]: The key fingerprint is:
+
+[    6.545675] cloud-init[1849]: SHA256:gzhsX5TgL8ZY9fWrMHe+9sv2RolgtJ+WtAHrOdka6Lg root@ip-10-0-0-178.ec2.internal
+
+[    6.547435] cloud-init[1849]: The key's randomart image is:
+
+[    6.548476] cloud-init[1849]: +--[ED25519 256]--+
+
+[    6.549363] cloud-init[1849]: |      . .   .    |
+
+[    6.550264] cloud-init[1849]: |     . o o + .   |
+
+[    6.551143] cloud-init[1849]: |      o o o + .  |
+
+[    6.552026] cloud-init[1849]: |   . = +   = o . |
+
+[    6.552882] cloud-init[1849]: |    * = S * O O .|
+
+[    6.553828] cloud-init[1849]: |   . + o o X % ..|
+
+[    6.554761] cloud-init[1849]: |      . o   * .. |
+
+[    6.555724] cloud-init[1849]: |       . . .  oo.|
+
+[    6.556668] cloud-init[1849]: |       E.    .o==|
+
+[    6.557645] cloud-init[1849]: +----[SHA256]-----+
+
+[    6.558531] cloud-init[1849]: Generating public/private ecdsa key pair.
+
+[    6.559699] cloud-init[1849]: Your identification has been saved in /etc/ssh/ssh_host_ecdsa_key
+
+[    6.561405] cloud-init[1849]: Your public key has been saved in /etc/ssh/ssh_host_ecdsa_key.pub
+
+[    6.562918] cloud-init[1849]: The key fingerprint is:
+
+[    6.563865] cloud-init[1849]: SHA256:pDOVuegx3ktTfXBy5rI9dLV7T/rIo+oYE+kIbWrjz1I root@ip-10-0-0-178.ec2.internal
+
+[    6.566243] cloud-init[1849]: The key's randomart image is:
+
+[    6.567591] cloud-init[1849]: +---[ECDSA 256]---+
+
+[    6.568837] cloud-init[1849]: |                 |
+
+[    6.569892] cloud-init[1849]: |         o       |
+
+[    6.571150] cloud-init[1849]: |        =   o + .|
+
+[    6.572305] cloud-init[1849]: |     . = o . B  o|
+
+[    6.573393] cloud-init[1849]: |    . X S . o +..|
+
+[    6.574424] cloud-init[1849]: |     *EO o   * ..|
+
+[    6.575592] cloud-init[1849]: |    +.+ B   . o.o|
+
+[    6.576734] cloud-init[1849]: |   o.o . *   ..=o|
+
+[    6.577936] cloud-init[1849]: |    .oo o.o...+oo|
+
+[    6.579130] cloud-init[1849]: +----[SHA256]-----+
+
+[    7.126070] cloud-init[1937]: Cloud-init v. 22.2.2 running 'modules:config' at Sun, 08 Nov 2026 18:00:41 +0000. Up 7.04 seconds.
+
+2026/11/08 18:00:41Z: SSM Agent unable to acquire credentials: <error>no valid credentials could be retrieved for ec2 identity. Default Host Management Err: error calling RequestManagedInstanceRoleToken: operation error SSM: RequestManagedInstanceRoleToken, https response error StatusCode: 400, RequestID: defcc0f5-5c2a-4f23-ae15-7aa94a355595, api error AccessDeniedException: Systems Manager's instance management role is not configured for account: 764277693415</error>
+[    7.709614] cloud-init[1948]: Cloud-init v. 22.2.2 running 'modules:final' at Sun, 08 Nov 2026 18:00:41 +0000. Up 7.65 seconds.
+[    7.781613] cloud-init[1948]: + dnf install -y iptables-services
+[    9.934174] cloud-init[1948]: Amazon Linux 2023 repository                     70 MB/s |  87 MB     00:01
+
+
+
+Amazon Linux 2023.12.20261102
+
+Kernel 6.18.56-125.164.amzn2023.x86_64 on an x86_64 (-)
+
+
+
+ip-10-0-0-178 login: [   30.408178] cloud-init[1948]: Amazon Linux 2023 Kernel Livepatch repository   678 kB/s |  89 kB     00:00
+
+[   32.442572] cloud-init[1948]: Dependencies resolved.
+
+[   32.521608] cloud-init[1948]: ================================================================================
+
+[   32.521787] cloud-init[1948]:  Package                  Arch     Version                  Repository     Size
+
+[   32.521987] cloud-init[1948]: ================================================================================
+
+[   32.522190] cloud-init[1948]: Installing:
+
+[   32.522400] cloud-init[1948]:  iptables-services        noarch   1.8.8-3.amzn2023.0.2     amazonlinux    18 k
+
+[   32.522611] cloud-init[1948]: Installing dependencies:
+
+[   32.522827] cloud-init[1948]:  iptables-libs            x86_64   1.8.8-3.amzn2023.0.2     amazonlinux   401 k
+
+[   32.523038] cloud-init[1948]:  iptables-nft             x86_64   1.8.8-3.amzn2023.0.2     amazonlinux   183 k
+
+[   32.523253] cloud-init[1948]:  iptables-utils           x86_64   1.8.8-3.amzn2023.0.2     amazonlinux    43 k
+
+[   32.524835] cloud-init[1948]:  libnetfilter_conntrack   x86_64   1.0.8-2.amzn2023.0.2     amazonlinux    58 k
+
+[   32.525030] cloud-init[1948]:  libnfnetlink             x86_64   1.0.1-19.amzn2023.0.2    amazonlinux    30 k
+
+[   32.525233] cloud-init[1948]:  libnftnl                 x86_64   1.2.2-2.amzn2023.0.2     amazonlinux    84 k
+
+[   32.525442] cloud-init[1948]: Transaction Summary
+
+[   32.525654] cloud-init[1948]: ================================================================================
+
+[   32.525867] cloud-init[1948]: Install  7 Packages
+
+[   32.541550] cloud-init[1948]: Total download size: 816 k
+
+[   32.541748] cloud-init[1948]: Installed size: 2.9 M
+
+[   32.543483] cloud-init[1948]: Downloading Packages:
+
+[   32.623968] cloud-init[1948]: (1/7): iptables-services-1.8.8-3.amzn2023.0.2.n 683 kB/s |  18 kB     00:00
+
+[   32.627726] cloud-init[1948]: (2/7): iptables-nft-1.8.8-3.amzn2023.0.2.x86_64 6.1 MB/s | 183 kB     00:00
+
+[   32.634062] cloud-init[1948]: (3/7): iptables-libs-1.8.8-3.amzn2023.0.2.x86_6  10 MB/s | 401 kB     00:00
+
+[   32.651385] cloud-init[1948]: (4/7): iptables-utils-1.8.8-3.amzn2023.0.2.x86_ 1.6 MB/s |  43 kB     00:00
+
+[   32.659341] cloud-init[1948]: (5/7): libnetfilter_conntrack-1.0.8-2.amzn2023. 1.8 MB/s |  58 kB     00:00
+
+[   32.661215] cloud-init[1948]: (6/7): libnfnetlink-1.0.1-19.amzn2023.0.2.x86_6 1.1 MB/s |  30 kB     00:00
+
+[   32.678037] cloud-init[1948]: (7/7): libnftnl-1.2.2-2.amzn2023.0.2.x86_64.rpm 3.1 MB/s |  84 kB     00:00
+
+[   32.679903] cloud-init[1948]: --------------------------------------------------------------------------------
+
+[   32.681688] cloud-init[1948]: Total                                           5.9 MB/s | 816 kB     00:00
+
+[   32.841791] cloud-init[1948]: Running transaction check
+
+[   32.908395] cloud-init[1948]: Transaction check succeeded.
+
+[   32.909417] cloud-init[1948]: Running transaction test
+
+[   33.228089] cloud-init[1948]: Transaction test succeeded.
+
+[   33.229474] cloud-init[1948]: Running transaction
+
+[   33.342542] cloud-init[1948]:   Preparing        :                                                        1/1
+
+[   33.357841] cloud-init[1948]:   Installing       : libnfnetlink-1.0.1-19.amzn2023.0.2.x86_64              1/7
+
+[   33.478984] cloud-init[1948]:   Installing       : libnetfilter_conntrack-1.0.8-2.amzn2023.0.2.x86_64     2/7
+
+[   33.499127] cloud-init[1948]:   Installing       : iptables-libs-1.8.8-3.amzn2023.0.2.x86_64              3/7
+
+[   33.529338] cloud-init[1948]:   Installing       : libnftnl-1.2.2-2.amzn2023.0.2.x86_64                   4/7
+
+[   33.539173] cloud-init[1948]:   Installing       : iptables-nft-1.8.8-3.amzn2023.0.2.x86_64               5/7
+
+[   33.581083] cloud-init[1948]:   Running scriptlet: iptables-nft-1.8.8-3.amzn2023.0.2.x86_64               5/7
+
+[   33.594351] cloud-init[1948]:   Installing       : iptables-utils-1.8.8-3.amzn2023.0.2.x86_64             6/7
+
+[   33.598046] cloud-init[1948]:   Installing       : iptables-services-1.8.8-3.amzn2023.0.2.noarch          7/7
+
+[   34.264266] zram_generator::config[2199]: zram0: system has too much memory (913MB), limit is 800MB, ignoring.
+
+[   34.603502] cloud-init[1948]:   Running scriptlet: iptables-services-1.8.8-3.amzn2023.0.2.noarch          7/7
+
+[   34.605667] cloud-init[1948]:   Verifying        : iptables-libs-1.8.8-3.amzn2023.0.2.x86_64              1/7
+
+[   34.607559] cloud-init[1948]:   Verifying        : iptables-nft-1.8.8-3.amzn2023.0.2.x86_64               2/7
+
+[   34.609257] cloud-init[1948]:   Verifying        : iptables-services-1.8.8-3.amzn2023.0.2.noarch          3/7
+
+[   34.611069] cloud-init[1948]:   Verifying        : iptables-utils-1.8.8-3.amzn2023.0.2.x86_64             4/7
+
+[   34.612907] cloud-init[1948]:   Verifying        : libnetfilter_conntrack-1.0.8-2.amzn2023.0.2.x86_64     5/7
+
+[   34.612994] cloud-init[1948]:   Verifying        : libnfnetlink-1.0.1-19.amzn2023.0.2.x86_64              6/7
+
+[   35.141675] cloud-init[1948]:   Verifying        : libnftnl-1.2.2-2.amzn2023.0.2.x86_64                   7/7
+
+[   35.143411] cloud-init[1948]: Installed:
+
+[   35.144160] cloud-init[1948]:   iptables-libs-1.8.8-3.amzn2023.0.2.x86_64
+
+[   35.145311] cloud-init[1948]:   iptables-nft-1.8.8-3.amzn2023.0.2.x86_64
+
+[   35.146881] cloud-init[1948]:   iptables-services-1.8.8-3.amzn2023.0.2.noarch
+
+[   35.146963] cloud-init[1948]:   iptables-utils-1.8.8-3.amzn2023.0.2.x86_64
+
+[   35.147190] cloud-init[1948]:   libnetfilter_conntrack-1.0.8-2.amzn2023.0.2.x86_64
+
+[   35.147396] cloud-init[1948]:   libnfnetlink-1.0.1-19.amzn2023.0.2.x86_64
+
+[   35.147817] cloud-init[1948]:   libnftnl-1.2.2-2.amzn2023.0.2.x86_64
+
+[   35.148025] cloud-init[1948]: Complete!
+
+[   35.287162] cloud-init[1948]: + cat
+
+[   35.290277] cloud-init[1948]: + sysctl --system
+
+[   35.295734] cloud-init[1948]: * Applying /etc/sysctl.d/00-defaults.conf ...
+
+[   35.295901] cloud-init[1948]: kernel.printk = 8 4 1 7
+
+[   35.296103] cloud-init[1948]: kernel.panic = 5
+
+[   35.298550] cloud-init[1948]: net.ipv4.neigh.default.gc_thresh1 = 0
+
+[   35.299497] cloud-init[1948]: net.ipv6.neigh.default.gc_thresh1 = 0
+
+[   35.300586] cloud-init[1948]: net.ipv4.neigh.default.gc_thresh2 = 15360
+
+[   35.301712] cloud-init[1948]: net.ipv6.neigh.default.gc_thresh2 = 15360
+
+[   35.302839] cloud-init[1948]: net.ipv4.neigh.default.gc_thresh3 = 16384
+
+[   35.303951] cloud-init[1948]: net.ipv6.neigh.default.gc_thresh3 = 16384
+
+[   35.305059] cloud-init[1948]: net.ipv4.tcp_wmem = 4096 20480 4194304
+
+[   35.306127] cloud-init[1948]: net.ipv4.ip_default_ttl = 127
+
+[   35.307070] cloud-init[1948]: kernel.unprivileged_bpf_disabled = 1
+
+[   35.308154] cloud-init[1948]: * Applying /usr/lib/sysctl.d/10-default-yama-scope.conf ...
+
+[   35.309514] cloud-init[1948]: kernel.yama.ptrace_scope = 0
+
+[   35.310480] cloud-init[1948]: * Applying /usr/lib/sysctl.d/50-coredump.conf ...
+
+[   35.311716] cloud-init[1948]: kernel.core_pattern = |/usr/lib/systemd/systemd-coredump %P %u %g %s %t %c %h
+
+[   35.313305] cloud-init[1948]: kernel.core_pipe_limit = 16
+
+[   35.314215] cloud-init[1948]: fs.suid_dumpable = 2
+
+[   35.315047] cloud-init[1948]: * Applying /usr/lib/sysctl.d/50-default.conf ...
+
+[   35.316269] cloud-init[1948]: kernel.sysrq = 16
+
+[   35.317067] cloud-init[1948]: kernel.core_uses_pid = 1
+
+[   35.317947] cloud-init[1948]: net.ipv4.conf.default.rp_filter = 2
+
+[   35.318973] cloud-init[1948]: sysctl: setting key "net.ipv4.conf.all.rp_filter": Invalid argument
+
+[   35.320496] cloud-init[1948]: net.ipv4.conf.default.accept_source_route = 0
+
+[   35.321645] cloud-init[1948]: sysctl: setting key "net.ipv4.conf.all.accept_source_route": Invalid argument
+
+[   35.323213] cloud-init[1948]: net.ipv4.conf.default.promote_secondaries = 1
+
+[   35.324366] cloud-init[1948]: sysctl: setting key "net.ipv4.conf.all.promote_secondaries": Invalid argument
+
+[   35.325982] cloud-init[1948]: net.ipv4.ping_group_range = 0 2147483647
+
+[   35.327160] cloud-init[1948]: net.core.default_qdisc = fq_codel
+
+[   35.327240] cloud-init[1948]: fs.protected_hardlinks = 1
+
+[   35.327466] cloud-init[1948]: fs.protected_symlinks = 1
+
+[   35.327685] cloud-init[1948]: fs.protected_regular = 1
+
+[   35.328147] cloud-init[1948]: fs.protected_fifos = 1
+
+[   35.328325] cloud-init[1948]: * Applying /usr/lib/sysctl.d/50-libkcapi-optmem_max.conf ...
+
+[   35.328532] cloud-init[1948]: net.core.optmem_max = 81920
+
+[   35.328954] cloud-init[1948]: * Applying /usr/lib/sysctl.d/50-pid-max.conf ...
+
+[   35.329159] cloud-init[1948]: kernel.pid_max = 4194304
+
+[   35.335381] cloud-init[1948]: * Applying /usr/lib/sysctl.d/60-amazon-linux-coredump.conf ...
+
+[   35.335477] cloud-init[1948]: fs.suid_dumpable = 0
+
+[   35.335685] cloud-init[1948]: * Applying /etc/sysctl.d/99-nat.conf ...
+
+[   35.335900] cloud-init[1948]: net.ipv4.ip_forward = 1
+
+[   35.336106] cloud-init[1948]: * Applying /etc/sysctl.d/99-sysctl.conf ...
+
+[   35.336314] cloud-init[1948]: * Applying /etc/sysctl.conf ...
+
+[   35.336528] cloud-init[1948]: ++ ip route show default
+
+[   35.336731] cloud-init[1948]: ++ awk '{print $5}'
+
+[   35.336937] cloud-init[1948]: + IFACE=ens5
+
+[   35.337144] cloud-init[1948]: + iptables -t nat -A POSTROUTING -o ens5 -j MASQUERADE
+
+[   35.447421] cloud-init[1948]: + iptables -A FORWARD -s 10.0.0.0/16 -o ens5 -j ACCEPT
+
+[   35.450631] cloud-init[1948]: + iptables -A FORWARD -d 10.0.0.0/16 -i ens5 -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+
+[   35.458967] cloud-init[1948]: + iptables -P FORWARD DROP
+
+[   35.480642] cloud-init[1948]: + systemctl enable --now iptables
+
+[   35.492883] cloud-init[1948]: Created symlink /etc/systemd/system/multi-user.target.wants/iptables.service ΓåÆ /usr/lib/systemd/system/iptables.service.
+
+[   35.647476] zram_generator::config[3961]: zram0: system has too much memory (913MB), limit is 800MB, ignoring.
+
+[   35.919456] cloud-init[1948]: + service iptables save
+
+[   35.986576] cloud-init[1948]: iptables: Saving firewall rules to /etc/sysconfig/iptables: [  OK  ]
+
+ci-info: no authorized SSH keys fingerprints found for user ec2-user.
+
+<14>Nov  8 18:01:12 cloud-init: #############################################################
+
+<14>Nov  8 18:01:12 cloud-init: -----BEGIN SSH HOST KEY FINGERPRINTS-----
+
+<14>Nov  8 18:01:12 cloud-init: 256 SHA256:pDOVuegx3ktTfXBy5rI9dLV7T/rIo+oYE+kIbWrjz1I root@ip-10-0-0-178.ec2.internal (ECDSA)
+
+<14>Nov  8 18:01:12 cloud-init: 256 SHA256:gzhsX5TgL8ZY9fWrMHe+9sv2RolgtJ+WtAHrOdka6Lg root@ip-10-0-0-178.ec2.internal (ED25519)
+
+<14>Nov  8 18:01:12 cloud-init: -----END SSH HOST KEY FINGERPRINTS-----
+
+<14>Nov  8 18:01:12 cloud-init: #############################################################
+
+-----BEGIN SSH HOST KEY KEYS-----
+
+ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBDBUcux3UKpZ6X2rLZa0SbtVE2brV8Xmhz3OMzGo8x5xPhlLaRTuMJw2cjrJXDJ5xl/c8Kdne1INScHqgDkEO6E= root@ip-10-0-0-178.ec2.internal
+
+ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIA1yKqV3kePKBWQiPPU55yiWEGQGZQPC6IF64q5PqERa root@ip-10-0-0-178.ec2.internal
+
+-----END SSH HOST KEY KEYS-----
+
+[   36.089353] cloud-init[1948]: Cloud-init v. 22.2.2 finished at Sun, 08 Nov 2026 18:01:12 +0000. Datasource DataSourceEc2.  Up 36.07 seconds
+
+2026/11/09 15:58:15Z: Amazon SSM Agent v3.3.5700.0 is running
+2026/11/09 15:58:15Z: OsProductName: Amazon Linux
+2026/11/09 15:58:15Z: OsVersion: 2023
+

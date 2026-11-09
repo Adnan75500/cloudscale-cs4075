@@ -17,3 +17,16 @@ resource "aws_dynamodb_table" "listings" {
     enabled = false
   }
 }
+resource "random_password" "flask_key" {
+  length  = 48
+  special = false
+}
+
+resource "aws_ssm_parameter" "flask_key" {
+  name  = "/cloudscale/flask-secret-key"
+  type  = "SecureString"
+  value = random_password.flask_key.result
+}
+data "aws_kms_alias" "ssm" {
+  name = "alias/aws/ssm"
+}    

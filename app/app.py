@@ -1,17 +1,153 @@
+import os, uuid, secrets, datetime
+from functools import wraps
+from urllib.parse import urlencode
 
-from flask import Flask
+import boto3, jwt, requests
+from flask import Flask, request, session, redirect, render_template, abort
+
+REGION = os.environ["AWS_REGION"]
+TABLE = os.environ["TABLE_NAME"]
+MEDIA_BUCKET = os.environ["MEDIA_BUCKET"]
+CDN = os.environ["CDN_DOMAIN"]
+COGNITO_DOMAIN = os.environ["COGNITO_DOMAIN"]
+CLIENT_ID = os.environ["COGNITO_CLIENT_ID"]
+POOL_ID = os.environ["COGNITO_POOL_ID"]
+APP_URL = os.environ["APP_URL"]
+
+ssm = boto3.client("ssm", region_name=REGION)
+table = boto3.resource("dynamodb", region_name=REGION).Table(TABLE)
+s3 = boto3.client("s3", region_name=REGION)
 
 app = Flask(__name__)
+app.secret_key = ssm.get_parameter(Name=os.environ["SECRET_PARAM"], WithDecryption=True)["Parameter"]["Value"]
+app.config.update(
+    MAX_CONTENT_LENGTH=5 * 1024 * 1024,
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE="Lax",
+)
+
+ISSUER = f"https://cognito-idp.{REGION}.amazonaws.com/{POOL_ID}"
+jwks = jwt.PyJWKClient(f"{ISSUER}/.well-known/jwks.json")
+
+
+def current_user():
+    return session.get("user")
+
+
+@app.context_processor
+def inject():
+    return {"user": current_user(), "cdn": CDN}
+
+
+def login_required(f):
+    @wraps(f)
+    def wrapper(*args, **kwargs):
+        if not current_user():
+            session["next"] = request.path
+            return redirect("/login")
+        return f(*args, **kwargs)
+    return wrapper
+
 
 @app.get("/health")
 def health():
     return "ok"
 
+
 @app.get("/burn")
 def burn():
-    # Deliberate CPU work, used only for the scaling demo
     return str(sum(i * i for i in range(2_000_000)))
 
+
+# ---------- auth ----------
+@app.get("/login")
+def login():
+    state = secrets.token_urlsafe(16)
+    session["state"] = state
+    q = urlencode({
+        "client_id": CLIENT_ID,
+        "response_type": "code",
+        "scope": "openid email",
+        "redirect_uri": f"{APP_URL}/callback",
+        "state": state,
+    })
+    return redirect(f"{COGNITO_DOMAIN}/login?{q}")
+
+
+@app.get("/callback")
+def callback():
+    expected = session.pop("state", None)
+    if not expected or request.args.get("state") != expected or "code" not in request.args:
+        abort(400)
+    r = requests.post(f"{COGNITO_DOMAIN}/oauth2/token", data={
+        "grant_type": "authorization_code",
+        "client_id": CLIENT_ID,
+        "code": request.args["code"],
+        "redirect_uri": f"{APP_URL}/callback",
+    }, timeout=10)
+    if r.status_code != 200:
+        abort(400)
+    id_token = r.json()["id_token"]
+    key = jwks.get_signing_key_from_jwt(id_token).key
+    claims = jwt.decode(id_token, key, algorithms=["RS256"], audience=CLIENT_ID, issuer=ISSUER)
+    session["user"] = {"sub": claims["sub"], "email": claims.get("email", "")}
+    return redirect(session.pop("next", "/"))
+
+
+@app.get("/logout")
+def logout():
+    session.clear()
+    return redirect(f"{COGNITO_DOMAIN}/logout?client_id={CLIENT_ID}&logout_uri={APP_URL}/")
+
+
+# ---------- listings ----------
 @app.get("/")
-def home():
-    return "CloudScale is alive"
+def index():
+    items = table.scan(Limit=200).get("Items", [])
+    q = request.args.get("q", "").lower()
+    if q:
+        items = [i for i in items if q in (i.get("title", "") + " " + i.get("description", "")).lower()]
+    items.sort(key=lambda i: i.get("created_at", ""), reverse=True)
+    return render_template("index.html", items=items, q=q)
+
+
+@app.route("/new", methods=["GET", "POST"])
+@login_required
+def new():
+    if request.method == "GET":
+        return render_template("new.html")
+    user = current_user()
+    lid = uuid.uuid4().hex
+    photo_key = thumb_key = ""
+    photo = request.files.get("photo")
+    if photo and photo.filename:
+        ext = photo.filename.rsplit(".", 1)[-1].lower()
+        if ext not in ("jpg", "jpeg", "png"):
+            abort(400, "Only jpg or png images")
+        photo_key = f"uploads/{lid}.{ext}"
+        thumb_key = f"thumbs/{lid}.{ext}"
+        s3.upload_fileobj(photo, MEDIA_BUCKET, photo_key, ExtraArgs={"ContentType": photo.mimetype})
+    table.put_item(Item={
+        "listing_id": lid,
+        "owner_sub": user["sub"],
+        "owner_email": user["email"],
+        "kind": request.form.get("kind", "lost"),
+        "title": request.form["title"][:120],
+        "description": request.form.get("description", "")[:1000],
+        "category": request.form.get("category", "other"),
+        "status": "open",
+        "photo_key": photo_key,
+        "thumb_key": thumb_key,
+        "created_at": datetime.datetime.utcnow().isoformat(),
+        "responses": [],
+    })
+    return redirect(f"/listing/{lid}")
+
+
+@app.get("/listing/<lid>")
+def listing(lid):
+    item = table.get_item(Key={"listing_id": lid}).get("Item")
+    if not item:
+        abort(404)
+    return render_template("listing.html", i=item)

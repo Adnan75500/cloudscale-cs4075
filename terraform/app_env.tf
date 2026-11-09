@@ -10,5 +10,7 @@ locals {
     COGNITO_CLIENT_ID = aws_cognito_user_pool_client.web.id
     COGNITO_POOL_ID   = aws_cognito_user_pool.main.id
     APP_URL           = "https://${aws_cloudfront_distribution.app.domain_name}"
+
+    SECRET_PARAM = aws_ssm_parameter.flask_key.name
   }
 }

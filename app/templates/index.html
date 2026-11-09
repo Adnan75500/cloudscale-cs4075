@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body %}
+<form method="get"><input name="q" value="{{ q }}" placeholder="Search items"></form>
+<div class="grid">
+{% for i in items %}
+  <div class="card">
+    {% if i.thumb_key %}
+    <img src="https://{{ cdn }}/{{ i.thumb_key }}"
+         onerror="this.onerror=null;this.src='https://{{ cdn }}/{{ i.photo_key }}'">
+    {% endif %}
+    <b>{{ i.kind|upper }}</b>: <a href="/listing/{{ i.listing_id }}">{{ i.title }}</a>
+    <div><small>{{ i.category }}</small></div>
+  </div>
+{% else %}
+  <p>No items yet.</p>
+{% endfor %}
+</div>
+{% endblock %}

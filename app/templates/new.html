@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block body %}
+<h2>Post an item</h2>
+<form method="post" enctype="multipart/form-data">
+  <select name="kind"><option value="lost">I lost something</option><option value="found">I found something</option></select>
+  <input name="title" id="title" placeholder="Title (e.g. Black HP laptop charger)" required>
+  <select name="category" id="category">
+    {% for c in ["electronics","books","id-cards","keys","clothing","bags","other"] %}<option>{{ c }}</option>{% endfor %}
+  </select>
+  <textarea name="description" id="description" rows="4" placeholder="Description"></textarea>
+  <input type="file" name="photo" accept="image/png,image/jpeg">
+  <button type="submit">Post</button>
+</form>
+{% endblock %}
