@@ -1,0 +1,51 @@
+================================================================================
+CLOUDSCALE: PRODUCTION-READY RESILIENT WEB APPLICATION (CS-4075)
+PROJECT DELIVERABLES & SUBMISSION DETAILS
+================================================================================
+
+STUDENT INFORMATION:
+--------------------
+- Student 1: Adnan Ahmed (Roll No: i23-0715, GitHub: @Adnan75500)
+- Student 2: Huzaifa Tahir (Roll No: i23-0731, GitHub: @HUZAIFA23901)
+
+REPOSITORY & LIVE URLS:
+-----------------------
+- Private GitHub Repository: https://github.com/Adnan75500/cloudscale-cs4075
+  (Instructor/Evaluators invited as Collaborators. Contains full incremental commit history by both contributors)
+- Live Application URL: https://d2cxf1oeapulob.cloudfront.net
+- Media CloudFront CDN: https://d26kbh3txabih0.cloudfront.net
+
+INDEX OF DELIVERABLES IN THIS ARCHIVE:
+--------------------------------------
+1. Full System Architecture Diagram:
+   - Architecture_diagram.drawio.png (Complete AWS architecture: Route 53, CloudFront, ALB, ASG, EC2 Private Subnets, DynamoDB, S3, SQS/SNS, SageMaker, Bedrock, CloudWatch, Budgets)
+
+2. Source Code & Infrastructure-as-Code (IaC):
+   - app/       : Flask application source code (Cognito auth, DynamoDB DAL, S3 media handler, SQS publisher, Bedrock & SageMaker client integration)
+   - terraform/ : Complete Terraform IaC modular code deploying all VPC, Compute, Storage, Database, Auth, Serverless, AI/ML, and Monitoring resources
+   - lambda/    : Lambda serverless notification processor triggered by SQS queue events
+   - ml/        : SageMaker custom Scikit-Learn category classification model training, deployment scripts, and inference code
+   - scripts/   : Automated deployment, load testing (loadtest.py), SSM remote execution, and helper scripts
+
+3. Version Control & Process Documentation:
+   - README.md      : Comprehensive project documentation, architecture explanation, and run instructions
+   - AI-DLC-LOG.md  : AI-Driven Development Lifecycle log documenting all 10 phases (Inception, Construction, Human Review & Operations) with verified commit hashes
+   - .gitignore     : Strict git exclusions ensuring no credentials, state files, or environments are committed
+
+4. Written Project Report:
+   - docs/CloudScale_Project_Report.pdf : Complete written technical report with service justifications, architectural breakdown, component screenshots, load & scaling demonstrations, and budget tracking
+   - docs/CloudScale_Project_Report.md  : Markdown source file for the report
+
+5. Demo Video:
+   - demo_video.mp4 : 7-minute high-definition screen recording demonstrating:
+     * Architecture walkthrough & GitHub commit history
+     * Cognito User Signup, Login, and Session management
+     * Item creation with image upload to S3, automated thumbnail generation
+     * GenAI Bedrock (Titan Express) description generation and SageMaker real-time ML category classification
+     * SQS asynchronous messaging and SNS multi-user notification email delivery
+     * Live CloudWatch Metrics, Alarm triggering, and EC2 Auto Scaling Group scale-out under synthetic load
+     * High availability failure recovery test
+
+6. Teardown & Resource Cleanup Confirmation:
+   - teardown.png : Final verification screenshot confirming billable AWS resources terminated cleanly post-demonstration
+================================================================================
