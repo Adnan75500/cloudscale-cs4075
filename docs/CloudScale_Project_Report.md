@@ -1,8 +1,9 @@
 # CloudScale: Campus Lost & Found on AWS (CS-4075 Final Report)
 
-**Author:** Adnan Khan  
+**Authors:** Adnan Ahmed & Huzaifa Tahir  
 **Region:** us-east-1 (N. Virginia)  
 **IaC Framework:** Terraform (v1.6+)  
+**Repository:** [https://github.com/Adnan75500/cloudscale-cs4075](https://github.com/Adnan75500/cloudscale-cs4075)  
 **Application URL:** [https://d2oszhh0246ohl.cloudfront.net](https://d2oszhh0246ohl.cloudfront.net)  
 **Date:** November 10, 2026  
 
@@ -17,6 +18,8 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 ---
 
 ## 2. Architecture Diagram & Request Flow Walkthrough
+
+![CloudScale AWS Architecture Diagram](../Architecture_diagram.drawio.png)
 
 ```
 [ Client Browser ]
@@ -69,6 +72,8 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Justification:** Private subnets shield application servers and databases from the public internet. Free Gateway Endpoints prevent massive S3 photo and database payloads from incurring NAT data transfer fees.
 - **Configuration:** ALB security group permits port 80 only from the CloudFront origin-facing prefix list. EC2 security group accepts port 8000 only from the ALB security group.
 
+![Phase 1 NAT Instance and VPC](../nat_phase1.png)
+
 ### Phase 2: Compute, Load Balancing & Auto Scaling
 - **Built:** ALB with `/health` checks, CloudFront distribution providing free HTTPS without domain registration, and an EC2 Auto Scaling Group (`min 2, desired 2, max 4, t3.micro`) with CPU target-tracking at 50%.
 - **Justification:** Eliminates single points of failure across availability zones and automatically responds to traffic surges.
@@ -98,13 +103,15 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Built:** CloudWatch dashboard (`cloudscale`) tracking EC2 CPU, ALB latency/requests, and Lambda errors; CloudWatch metric alarms for high CPU (>70%) and ALB 5XX errors notifying SNS alerts email; AWS Budget ($100).
 - **Justification:** Guarantees SLA observability, fast incident response, and budget overspend protection.
 
-### Phase 9: Machine Learning (Amazon SageMaker)
-- **Built:** Supervised text classifier (TF-IDF + Logistic Regression) hosted as a Serverless SageMaker endpoint (`cloudscale-category`) with in-app category suggestion button.
-- **Justification:** Supervised model trained on specific campus categories is predictable, low-latency, and retrainable. Serverless endpoint scales to 0 instances when idle, minimizing cost.
+![Phase 8 CloudWatch Alarm](../cloudwatch_alarm.PNG)
 
-### Phase 10: Generative AI (Amazon Bedrock)
-- **Built:** Amazon Bedrock integration using foundation model `amazon.nova-lite-v1:0` via Bedrock Converse API for automatic description drafting.
-- **Justification:** Bedrock handles open-ended text synthesis that small classification models cannot. Prompt injection guardrails restrict output strictly to user-supplied facts.
+### Phase 9 & 10: AI & Machine Learning (SageMaker & Bedrock)
+- **Built:** 
+  1. Supervised text classifier (TF-IDF + Logistic Regression) hosted as a Serverless SageMaker endpoint (`cloudscale-category`) with in-app category suggestion button.
+  2. Amazon Bedrock integration using foundation model `amazon.nova-lite-v1:0` via Bedrock Converse API for automatic description drafting.
+- **Justification:** SageMaker handles predictable, narrow categorical classification using our custom dataset. Bedrock handles open-ended, contextual natural language drafting.
+
+![SageMaker Category Suggestion & Bedrock Description Generator in App](../bedrock_and_sagemaker.png)
 
 ---
 
@@ -130,6 +137,8 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 | **Serverless SageMaker** | Real-time Instance ($40/mo) | Scales to zero instances when no inference requests are active. |
 | **CloudFront Default Cert** | Route 53 Domain + ACM | Free HTTPS satisfies Cognito Hosted UI callback requirements without domain fees. |
 
+![AWS Budget and Cost Management](../budget.png)
+
 ---
 
 ## 7. AI-DLC (AI-Driven Development Life Cycle) Summary
@@ -148,7 +157,10 @@ All 10 phases followed the ordered AI-DLC beats:
 
 ---
 
-## 9. Teardown Instructions
+## 9. Pre-Submission Checklist & Teardown Instructions
+
+![Day-One Setup: Scoped Deployer Access Keys](../aceess-key_step_1.png)
+
 To prevent post-grading cloud expenditure:
 ```powershell
 # 1. Delete SageMaker Serverless Endpoint

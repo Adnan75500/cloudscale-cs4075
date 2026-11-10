@@ -227,9 +227,9 @@ def build_pdf_report(pdf_path):
     story.append(HRFlowable(width="100%", thickness=2, color=c_primary, spaceAfter=15))
 
     meta_table = Table([
-        [Paragraph("<b>Author / Student:</b> Adnan Khan", body_style), Paragraph("<b>Region:</b> us-east-1 (N. Virginia)", body_style)],
-        [Paragraph("<b>Application URL:</b> https://d2oszhh0246ohl.cloudfront.net", body_style), Paragraph("<b>IaC Framework:</b> Terraform (v1.6+)", body_style)],
-        [Paragraph("<b>Repository:</b> Private GitHub (Collaborator Invited)", body_style), Paragraph("<b>Date:</b> " + datetime.now().strftime("%B %d, %Y"), body_style)]
+        [Paragraph("<b>Authors / Students:</b> Adnan Ahmed &amp; Huzaifa Tahir", body_style), Paragraph("<b>Region:</b> us-east-1 (N. Virginia)", body_style)],
+        [Paragraph("<b>Application URL:</b> <a href='https://d2oszhh0246ohl.cloudfront.net'>https://d2oszhh0246ohl.cloudfront.net</a>", body_style), Paragraph("<b>IaC Framework:</b> Terraform (v1.6+)", body_style)],
+        [Paragraph("<b>Repository:</b> <a href='https://github.com/Adnan75500/cloudscale-cs4075'>https://github.com/Adnan75500/cloudscale-cs4075</a>", body_style), Paragraph("<b>Date:</b> " + datetime.now().strftime("%B %d, %Y"), body_style)]
     ], colWidths=[(letter[0]-108)/2, (letter[0]-108)/2])
     meta_table.setStyle(TableStyle([
         ('BACKGROUND', (0, 0), (-1, -1), c_light_bg),
@@ -303,7 +303,8 @@ def build_pdf_report(pdf_path):
          "Custom VPC (10.0.0.0/16) across 2 Availability Zones (us-east-1a, us-east-1b) featuring 2 public subnets, 2 private subnets, Internet Gateway, a cost-effective t3.micro NAT instance, and free VPC Gateway Endpoints for S3 and DynamoDB.",
          "Provides network isolation so database queries and application servers never touch public IPs. Gateway endpoints keep high-volume storage traffic entirely off the NAT instance.",
          "CIDR: 10.0.0.0/16; Public subnets: 10.0.0.0/24, 10.0.1.0/24; Private subnets: 10.0.10.0/24, 10.0.11.0/24. ALB SG allows only CloudFront origin prefix list. App SG accepts port 8000 only from ALB SG. NAT instance uses iptables masquerading.",
-         "VPC Resource Map screenshot showing dual-AZ layout and route tables."),
+         "VPC Resource Map screenshot showing dual-AZ layout, NAT instance, and route tables.",
+         "nat_phase1.png"),
 
         ("Phase 2: Compute, Load Balancing &amp; Auto Scaling",
          "Application Load Balancer (ALB) in public subnets with target group (port 8000, /health check), CloudFront distribution providing free HTTPS without a custom domain, and an EC2 Auto Scaling Group (min 2, desired 2, max 4, t3.micro) in private subnets with CPU target-tracking at 50%.",
@@ -352,13 +353,15 @@ def build_pdf_report(pdf_path):
          "Supervised Scikit-learn text classifier (TF-IDF + Logistic Regression) trained locally and hosted as a SageMaker Serverless Inference Endpoint (cloudscale-category). In-app 'Suggest category' button queries endpoint in real time.",
          "Instantly classifies ambiguous user titles into 7 standard categories (electronics, books, id-cards, keys, clothing, bags, other), keeping data consistent and searchable without human error.",
          "Serverless config: memory_size_in_mb = 2048, max_concurrency = 2; SKLearnModel framework_version = 1.4-2; PYTHONPATH configured for /opt/ml/model/code and user site-packages; least-privilege EC2 IAM policy.",
-         "SageMaker endpoint status InService, output of test_endpoint.py returning JSON prediction, and in-app button populating category dropdown."),
+         "SageMaker endpoint status InService, output of test_endpoint.py returning JSON prediction, and in-app button populating category dropdown.",
+         "bedrock_and_sagemaker.png"),
 
         ("Phase 10: Generative AI (Amazon Bedrock)",
          "Amazon Bedrock integration using foundation model amazon.nova-lite-v1:0 via the Bedrock Converse API. Flask route /api/write-description drafts factual lost-and-found descriptions.",
          "Eliminates writer's block and ensures postings are clear, professional, concise, and helpful to the finder/owner while strictly preventing hallucinations and prompt injection.",
          "Model: amazon.nova-lite-v1:0; Converse API: maxTokens = 200, temperature = 0.4; System prompt constraints enforce strict factual adherence to user notes; EC2 IAM role restricted to bedrock:InvokeModel.",
-         "In-app 'Write description' button automatically filling the description box with Nova-generated text.")
+         "In-app 'Write description' button automatically filling the description box with Nova-generated text.",
+         "bedrock_and_sagemaker.png")
     ]
 
     for item in phases_data:
@@ -448,7 +451,8 @@ def build_pdf_report(pdf_path):
     ))
     story.append(make_screenshot_placeholder(
         "Budget & Cost Explorer Evidence",
-        "AWS Budgets console dashboard showing $100 budget with 0% or low actual spend, and Cost Explorer daily spend chart."
+        "AWS Budgets console dashboard showing $100 budget with 0% or low actual spend, and Cost Explorer daily spend chart.",
+        image_path="budget.png"
     ))
     story.append(Spacer(1, 10))
 
@@ -518,9 +522,15 @@ def build_pdf_report(pdf_path):
         "&bull; <b>No AdministratorAccess:</b> Verified with <font name='Courier'>aws iam list-entities-for-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess</font> (returns zero attached workload roles).<br/>"
         "&bull; <b>No Secrets in Git:</b> Verified with <font name='Courier'>git log -p -S AKIA</font> and <font name='Courier'>git ls-files | findstr /i 'tfstate .env .pem'</font> (returns 0 files).<br/>"
         "&bull; <b>Least Privilege Review:</b> All IAM policies are explicitly restricted to resource ARNs. The only two <font name='Courier'>Resource = '*'</font> statements are <font name='Courier'>ecr:GetAuthorizationToken</font> and <font name='Courier'>cloudwatch:PutMetricData</font> which AWS does not support scoping to specific resources.<br/>"
-        "&bull; <b>GitHub Collaborator:</b> Instructor / TA invited and accepted on private repository.",
+        "&bull; <b>GitHub Collaborator &amp; Repository:</b> Instructor / TA invited and accepted on <font name='Courier'>https://github.com/Adnan75500/cloudscale-cs4075</font>.",
         body_style
     ))
+    story.append(make_screenshot_placeholder(
+        "Day-One Setup: Scoped Deployer IAM Access & CLI Identity",
+        "AWS STS caller identity and IAM scoped deployer user verification.",
+        image_path="aceess-key_step_1.png"
+    ))
+    story.append(Spacer(1, 8))
     story.append(Paragraph(
         "<b>Teardown Instructions (Run within 48 hours of grading):</b><br/>"
         "1. Delete SageMaker Serverless Endpoint and Config to stop idle storage:<br/>"
@@ -546,9 +556,10 @@ def build_markdown_report(md_path):
     os.makedirs(os.path.dirname(md_path), exist_ok=True)
     content = """# CloudScale: Campus Lost & Found on AWS (CS-4075 Final Report)
 
-**Author:** Adnan Khan  
+**Authors:** Adnan Ahmed & Huzaifa Tahir  
 **Region:** us-east-1 (N. Virginia)  
 **IaC Framework:** Terraform (v1.6+)  
+**Repository:** [https://github.com/Adnan75500/cloudscale-cs4075](https://github.com/Adnan75500/cloudscale-cs4075)  
 **Application URL:** [https://d2oszhh0246ohl.cloudfront.net](https://d2oszhh0246ohl.cloudfront.net)  
 **Date:** {date}  
 
@@ -563,6 +574,8 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 ---
 
 ## 2. Architecture Diagram & Request Flow Walkthrough
+
+![CloudScale AWS Architecture Diagram](../Architecture_diagram.drawio.png)
 
 ```
 [ Client Browser ]
@@ -615,6 +628,8 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Justification:** Private subnets shield application servers and databases from the public internet. Free Gateway Endpoints prevent massive S3 photo and database payloads from incurring NAT data transfer fees.
 - **Configuration:** ALB security group permits port 80 only from the CloudFront origin-facing prefix list. EC2 security group accepts port 8000 only from the ALB security group.
 
+![Phase 1 NAT Instance and VPC](../nat_phase1.png)
+
 ### Phase 2: Compute, Load Balancing & Auto Scaling
 - **Built:** ALB with `/health` checks, CloudFront distribution providing free HTTPS without domain registration, and an EC2 Auto Scaling Group (`min 2, desired 2, max 4, t3.micro`) with CPU target-tracking at 50%.
 - **Justification:** Eliminates single points of failure across availability zones and automatically responds to traffic surges.
@@ -644,13 +659,15 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Built:** CloudWatch dashboard (`cloudscale`) tracking EC2 CPU, ALB latency/requests, and Lambda errors; CloudWatch metric alarms for high CPU (>70%) and ALB 5XX errors notifying SNS alerts email; AWS Budget ($100).
 - **Justification:** Guarantees SLA observability, fast incident response, and budget overspend protection.
 
-### Phase 9: Machine Learning (Amazon SageMaker)
-- **Built:** Supervised text classifier (TF-IDF + Logistic Regression) hosted as a Serverless SageMaker endpoint (`cloudscale-category`) with in-app category suggestion button.
-- **Justification:** Supervised model trained on specific campus categories is predictable, low-latency, and retrainable. Serverless endpoint scales to 0 instances when idle, minimizing cost.
+![Phase 8 CloudWatch Alarm](../cloudwatch_alarm.PNG)
 
-### Phase 10: Generative AI (Amazon Bedrock)
-- **Built:** Amazon Bedrock integration using foundation model `amazon.nova-lite-v1:0` via Bedrock Converse API for automatic description drafting.
-- **Justification:** Bedrock handles open-ended text synthesis that small classification models cannot. Prompt injection guardrails restrict output strictly to user-supplied facts.
+### Phase 9 & 10: AI & Machine Learning (SageMaker & Bedrock)
+- **Built:** 
+  1. Supervised text classifier (TF-IDF + Logistic Regression) hosted as a Serverless SageMaker endpoint (`cloudscale-category`) with in-app category suggestion button.
+  2. Amazon Bedrock integration using foundation model `amazon.nova-lite-v1:0` via Bedrock Converse API for automatic description drafting.
+- **Justification:** SageMaker handles predictable, narrow categorical classification using our custom dataset. Bedrock handles open-ended, contextual natural language drafting.
+
+![SageMaker Category Suggestion & Bedrock Description Generator in App](../bedrock_and_sagemaker.png)
 
 ---
 
@@ -676,6 +693,8 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 | **Serverless SageMaker** | Real-time Instance ($40/mo) | Scales to zero instances when no inference requests are active. |
 | **CloudFront Default Cert** | Route 53 Domain + ACM | Free HTTPS satisfies Cognito Hosted UI callback requirements without domain fees. |
 
+![AWS Budget and Cost Management](../budget.png)
+
 ---
 
 ## 7. AI-DLC (AI-Driven Development Life Cycle) Summary
@@ -694,7 +713,10 @@ All 10 phases followed the ordered AI-DLC beats:
 
 ---
 
-## 9. Teardown Instructions
+## 9. Pre-Submission Checklist & Teardown Instructions
+
+![Day-One Setup: Scoped Deployer Access Keys](../aceess-key_step_1.png)
+
 To prevent post-grading cloud expenditure:
 ```powershell
 # 1. Delete SageMaker Serverless Endpoint
