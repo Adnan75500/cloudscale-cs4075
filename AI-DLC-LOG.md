@@ -44,7 +44,7 @@
 - Issues found: Initial instance boot required dependency install before turning healthy; tuned ALB health check intervals to 15s.
 - Decisions to remember: ASG spans both private subnets for multi-AZ high availability.
 
-**Commit:** `611a677`
+**Commit:** `9cd2769`
 
 ---
 
@@ -68,7 +68,7 @@
 - Issues found: Direct curl to S3 returned HTTP 403 (expected); retrieval via CloudFront returned HTTP 200.
 - Decisions to remember: Photos in `uploads/` trigger Lambda thumbnail generation; thumbnails are served from `thumbs/`.
 
-**Commit:** `f2abb94`
+**Commit:** `fb7aba8`
 
 ---
 
@@ -92,7 +92,7 @@
 - Issues found: Verified that EC2 instances query DynamoDB through the VPC Gateway Endpoint with zero NAT data transfer charges.
 - Decisions to remember: Responses are stored as an attribute list within the listing item.
 
-**Commit:** `61dd71c`
+**Commit:** `3484027`
 
 ---
 
@@ -116,7 +116,7 @@
 - Issues found: Tested sign-up and email verification; confirmation codes delivered promptly to student inbox.
 - Decisions to remember: Token verification validates JWT signatures against Cognito's public JWKS endpoint.
 
-**Commit:** `f266909`
+**Commit:** `6e5ff98`
 
 ---
 
@@ -140,7 +140,7 @@
 - Issues found: Verified listings render in responsive grid; photos upload to S3 `uploads/` successfully.
 - Decisions to remember: All user-facing routes are accessible via CloudFront edge URL.
 
-**Commit:** `e9b503a`
+**Commit:** `1c83dd4`
 
 ---
 
@@ -164,7 +164,7 @@
 - Issues found: Lambda thumbnail execution verified in CloudWatch logs; SQS retries tested by simulating transient errors.
 - Decisions to remember: Asynchronous decoupling keeps web request response time sub-100ms.
 
-**Commit:** `a933053`
+**Commit:** `1191d8b`
 
 ---
 
@@ -188,7 +188,7 @@
 - Issues found: Confirmed email subscription to SNS topic; manually tested alarm state and verified email receipt in inbox.
 - Decisions to remember: Dashboard provides end-to-end SLA visibility across all 3 tiers.
 
-**Commit:** `233adce`
+**Commit:** `025fb88`
 
 ---
 
@@ -212,7 +212,7 @@
 - Issues found: Endpoint verified `InService`; `ml/test_endpoint.py` returned predictions in ~360ms. Added `/api/suggest-category` to `app/app.py` and UI button in `app/templates/new.html`.
 - Decisions to remember: Supervised classification ensures consistent taxonomy across campus lost items.
 
-**Commit:** `653cee2`
+**Commit:** `a57c4b5`
 
 ---
 
@@ -236,4 +236,4 @@
 - Issues found: Verified that clicking "Write description" auto-drafts clean, helpful descriptions directly into the form.
 - Decisions to remember: Nova Lite is fast, cost-effective, and fully supported via Converse API.
 
-**Commit:** `653cee2`
+**Commit:** `a57c4b5`
