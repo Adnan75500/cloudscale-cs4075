@@ -172,25 +172,3 @@ All 10 phases followed the ordered AI-DLC beats:
 1. **Single NAT Instance:** Single point of failure for private egress. Future improvement: Deploy an automated failover script or multi-AZ NAT Gateway.
 2. **Plain HTTP ALB Hop:** CloudFront terminates TLS, but forwards over HTTP to the ALB. Future improvement: Purchase a domain and configure end-to-end TLS.
 3. **Synthetic Training Data:** Model trained on synthetic campus titles. Future improvement: Implement automated weekly retraining on accumulated real listings.
-
----
-
-## 9. Pre-Submission Checklist & Teardown Instructions
-
-![Day-One Setup: Scoped Deployer Access Keys](../aceess-key_step_1.png)
-
-To prevent post-grading cloud expenditure:
-```powershell
-# 1. Delete SageMaker Serverless Endpoint
-aws sagemaker delete-endpoint --endpoint-name cloudscale-category --region us-east-1
-aws sagemaker delete-endpoint-config --endpoint-config-name cloudscale-category --region us-east-1
-
-# 2. Destroy all Terraform resources
-cd terraform
-terraform destroy -auto-approve
-
-# 3. Verify zero resources remain
-aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale
-```
-
-![Teardown Verification](../teardown.png)

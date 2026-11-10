@@ -522,7 +522,7 @@ def build_pdf_report(pdf_path):
     ))
     story.append(Spacer(1, 10))
 
-    # ==================== SECTION 8 & 9: LIMITATIONS & TEARDOWN ====================
+    # ==================== SECTION 8: LIMITATIONS ====================
     story.append(Paragraph("8. Architectural Limitations &amp; Production Roadmap", h1_style))
     story.append(Paragraph(
         "<b>Honest Assessment of Current Limitations:</b><br/>"
@@ -538,38 +538,6 @@ def build_pdf_report(pdf_path):
         body_style
     ))
     story.append(Spacer(1, 10))
-
-    story.append(Paragraph("9. Pre-Submission Checklist &amp; Teardown Instructions", h1_style))
-    story.append(Paragraph(
-        "<b>Pre-Submission Verification Checklist:</b><br/>"
-        "&bull; <b>No AdministratorAccess:</b> Verified with <font name='Courier'>aws iam list-entities-for-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess</font> (returns zero attached workload roles).<br/>"
-        "&bull; <b>No Secrets in Git:</b> Verified with <font name='Courier'>git log -p -S AKIA</font> and <font name='Courier'>git ls-files | findstr /i 'tfstate .env .pem'</font> (returns 0 files).<br/>"
-        "&bull; <b>Least Privilege Review:</b> All IAM policies are explicitly restricted to resource ARNs. The only two <font name='Courier'>Resource = '*'</font> statements are <font name='Courier'>ecr:GetAuthorizationToken</font> and <font name='Courier'>cloudwatch:PutMetricData</font> which AWS does not support scoping to specific resources.<br/>"
-        "&bull; <b>GitHub Collaborator &amp; Repository:</b> Instructor / TA invited and accepted on <font name='Courier'>https://github.com/Adnan75500/cloudscale-cs4075</font>.",
-        body_style
-    ))
-    story.append(make_screenshot_placeholder(
-        "Day-One Setup: Scoped Deployer IAM Access & CLI Identity",
-        "AWS STS caller identity and IAM scoped deployer user verification.",
-        image_path="aceess-key_step_1.png"
-    ))
-    story.append(Spacer(1, 8))
-    story.append(Paragraph(
-        "<b>Teardown Instructions (Run within 48 hours of grading):</b><br/>"
-        "1. Delete SageMaker Serverless Endpoint and Config to stop idle storage:<br/>"
-        "<font name='Courier'>aws sagemaker delete-endpoint --endpoint-name cloudscale-category --region us-east-1</font><br/>"
-        "<font name='Courier'>aws sagemaker delete-endpoint-config --endpoint-config-name cloudscale-category --region us-east-1</font><br/>"
-        "2. Destroy all Terraform infrastructure (ALB, ASG, VPC, CloudFront, S3, Cognito, Lambdas):<br/>"
-        "<font name='Courier'>cd terraform &amp;&amp; terraform destroy -auto-approve</font><br/>"
-        "3. Verify that zero active resources remain:<br/>"
-        "<font name='Courier'>aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale</font>",
-        body_style
-    ))
-    story.append(make_screenshot_placeholder(
-        "Teardown Verification Evidence",
-        "Screenshot showing Terraform destroy complete, EC2 console with zero running instances, and AWS Billing zero-spend status.",
-        image_path="teardown.png"
-    ))
 
     # Build PDF with dynamic page numbering
     doc.build(story, canvasmaker=NumberedCanvas)
@@ -752,28 +720,6 @@ All 10 phases followed the ordered AI-DLC beats:
 1. **Single NAT Instance:** Single point of failure for private egress. Future improvement: Deploy an automated failover script or multi-AZ NAT Gateway.
 2. **Plain HTTP ALB Hop:** CloudFront terminates TLS, but forwards over HTTP to the ALB. Future improvement: Purchase a domain and configure end-to-end TLS.
 3. **Synthetic Training Data:** Model trained on synthetic campus titles. Future improvement: Implement automated weekly retraining on accumulated real listings.
-
----
-
-## 9. Pre-Submission Checklist & Teardown Instructions
-
-![Day-One Setup: Scoped Deployer Access Keys](../aceess-key_step_1.png)
-
-To prevent post-grading cloud expenditure:
-```powershell
-# 1. Delete SageMaker Serverless Endpoint
-aws sagemaker delete-endpoint --endpoint-name cloudscale-category --region us-east-1
-aws sagemaker delete-endpoint-config --endpoint-config-name cloudscale-category --region us-east-1
-
-# 2. Destroy all Terraform resources
-cd terraform
-terraform destroy -auto-approve
-
-# 3. Verify zero resources remain
-aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale
-```
-
-![Teardown Verification](../teardown.png)
 """.format(date=datetime.now().strftime("%B %d, %Y"))
 
     with open(md_path, "w", encoding="utf-8") as f:
