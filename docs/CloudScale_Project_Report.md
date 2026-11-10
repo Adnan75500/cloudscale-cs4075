@@ -79,25 +79,37 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Justification:** Eliminates single points of failure across availability zones and automatically responds to traffic surges.
 - **Configuration:** Gunicorn (`-b 0.0.0.0:8000 -w 2`), IMDSv2 metadata tokens required, zero SSH port access (managed via SSM Session Manager).
 
+![Phase 2 ALB Target Health & HTTPS Padlock](../phase2_alb_https.png)
+
 ### Phase 3: Storage (S3) & CDN (CloudFront Media)
 - **Built:** Private S3 bucket (`cloudscale-media-<account_id>`) with versioning enabled, lifecycle transition to Standard-IA after 30 days, expiration of noncurrent versions after 90 days, and CloudFront with Origin Access Control (OAC).
 - **Justification:** Versioning guards against photo loss. Standard-IA cuts dormant photo storage costs by ~40%. OAC guarantees zero public bucket access.
+
+![Phase 3 S3 Storage, Versioning & Lifecycle](../phase3_s3_storage.png)
 
 ### Phase 4: Data Layer (DynamoDB NoSQL)
 - **Built:** Amazon DynamoDB table (`cloudscale-listings`) with partition key `listing_id` (String) accessed through a VPC Gateway Endpoint.
 - **Justification:** Lost-and-found listings require single-item lookups and dynamic schemata (responses list appended over time). On-demand billing costs $0 when idle, unlike relational databases.
 
+![Phase 4 DynamoDB Table & Items](../phase4_dynamodb.png)
+
 ### Phase 5: Identity & Access (Amazon Cognito)
 - **Built:** Cognito User Pool (`cloudscale-users`) with email sign-in, self-service verification, Hosted UI domain, and a public client utilizing authorization code grant.
 - **Justification:** Secure authentication without managing user databases or password hashing on EC2. A public client eliminates storing client secrets in user-data scripts.
+
+![Phase 5 Cognito Hosted UI & Confirmed Users](../phase5_cognito.png)
 
 ### Phase 6: Web Application Architecture (Flask)
 - **Built:** Full-stack Python Flask application with Jinja2 templating, SSM-backed session management, DynamoDB integration, and S3 file uploads.
 - **Justification:** Modular, lightweight micro-framework capable of horizontal scaling across instances without sticky sessions.
 
+![Phase 6 Web Application Home & Search Interface](../phase6_webapp.png)
+
 ### Phase 7: Asynchronous Serverless (Lambda, SQS, SNS)
 - **Built:** Lambda #1 (Thumbnail) triggered by S3 uploads writing to `thumbs/`; SQS queue with Dead-Letter Queue (DLQ); Lambda #2 (Notifier) consuming SQS and publishing to SNS email with owner filter policy.
 - **Justification:** Decouples photo processing and email delivery from web responses, ensuring sub-100ms web latency. SQS retries transient delivery failures up to 3 times before DLQ.
+
+![Phase 7 S3 Thumbnail & SQS/SNS Alerts](../phase7_serverless.png)
 
 ### Phase 8: Monitoring, Telemetry & Budget Controls
 - **Built:** CloudWatch dashboard (`cloudscale`) tracking EC2 CPU, ALB latency/requests, and Lambda errors; CloudWatch metric alarms for high CPU (>70%) and ALB 5XX errors notifying SNS alerts email; AWS Budget ($100).
@@ -119,11 +131,15 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Procedure:** Executed `python scripts/loadtest.py https://d2oszhh0246ohl.cloudfront.net/burn 600` (40 threads, 10 minutes).
 - **Results:** ASG average CPU crossed 50% within 3.5 minutes. CloudWatch alarm triggered horizontal scale-out from 2 to 4 instances. Upon test completion, instances scaled in back to 2 instances.
 
+![Auto Scaling Under Load Demonstration](../scaling_demo.png)
+
 ---
 
 ## 5. Resilience & Failure Recovery Demonstration
 - **Procedure:** Terminated an EC2 instance forcefully via `aws ec2 terminate-instances`.
 - **Results:** ALB target group drained connections and routed 100% of requests to the surviving instance with 0 downtime. ASG detected capacity deficit and launched a replacement instance within 4 minutes.
+
+![High Availability & EC2 Instance Recovery](../failure_recovery.png)
 
 ---
 
@@ -147,6 +163,8 @@ All 10 phases followed the ordered AI-DLC beats:
 1. **Inception:** Prompted coding assistant with scope, constraints, and questions.
 2. **Construction:** Reviewed Terraform plans and code diffs before applying; rejected insecure defaults (e.g., broad IAM `*` permissions, open SSH ports).
 3. **Operations:** Verified deployed AWS resources, tested API endpoints, and committed changes with phase tags.
+
+![AI-DLC Interaction Session](../aidlc_session.png)
 
 ---
 
@@ -174,3 +192,5 @@ terraform destroy -auto-approve
 # 3. Verify zero resources remain
 aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale
 ```
+
+![Teardown Verification](../teardown.png)

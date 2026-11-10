@@ -67,6 +67,7 @@ class NumberedCanvas(canvas.Canvas):
 
 
 def build_pdf_report(pdf_path):
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
     doc = SimpleDocTemplate(
         pdf_path,
@@ -182,26 +183,39 @@ def build_pdf_report(pdf_path):
 
     def make_screenshot_placeholder(caption, instructions, image_path=None):
         flowables = []
-        if image_path and os.path.exists(image_path):
-            try:
-                from PIL import Image as PILImage
-                with PILImage.open(image_path) as im:
-                    w, h = im.size
-                max_w = letter[0] - 108
-                max_h = 3.8 * inch
-                aspect = h / float(w)
-                display_w = max_w
-                display_h = display_w * aspect
-                if display_h > max_h:
-                    display_h = max_h
-                    display_w = display_h / aspect
-                
-                flowables.append(RLImage(image_path, width=display_w, height=display_h))
-                flowables.append(Spacer(1, 4))
-                flowables.append(Paragraph(f"<b>Figure:</b> {caption}", callout_style))
-                return KeepTogether(flowables)
-            except Exception as e:
-                pass
+        if image_path:
+            # Check direct path and root-relative path
+            candidate_paths = [
+                image_path,
+                os.path.join(root_dir, image_path),
+                os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), image_path)
+            ]
+            resolved_path = None
+            for cp in candidate_paths:
+                if os.path.exists(cp):
+                    resolved_path = cp
+                    break
+
+            if resolved_path:
+                try:
+                    from PIL import Image as PILImage
+                    with PILImage.open(resolved_path) as im:
+                        w, h = im.size
+                    max_w = letter[0] - 108
+                    max_h = 3.2 * inch
+                    aspect = h / float(w)
+                    display_w = max_w
+                    display_h = display_w * aspect
+                    if display_h > max_h:
+                        display_h = max_h
+                        display_w = display_h / aspect
+                    
+                    flowables.append(RLImage(resolved_path, width=display_w, height=display_h))
+                    flowables.append(Spacer(1, 4))
+                    flowables.append(Paragraph(f"<b>Figure:</b> {caption}", callout_style))
+                    return KeepTogether(flowables)
+                except Exception as e:
+                    pass
 
         content = [
             Paragraph(f"<b>[SCREENSHOT PLACEHOLDER]</b> {caption}", body_bold),
@@ -310,37 +324,43 @@ def build_pdf_report(pdf_path):
          "Application Load Balancer (ALB) in public subnets with target group (port 8000, /health check), CloudFront distribution providing free HTTPS without a custom domain, and an EC2 Auto Scaling Group (min 2, desired 2, max 4, t3.micro) in private subnets with CPU target-tracking at 50%.",
          "Ensures zero downtime, graceful failover across AZs, horizontal scale-out under heavy campus load, and HTTPS termination required by OAuth/Cognito.",
          "CloudFront origin protocol policy: http-only; ALB listener port 80; Launch template AL2023 with user-data installing Python 3.11, Gunicorn, systemd unit; TargetTrackingScaling on ASGAverageCPUUtilization = 50.",
-         "CloudFront distribution status, ALB target health descriptions showing healthy targets, and HTTPS browser padlock."),
+         "CloudFront distribution status, ALB target health descriptions showing healthy targets, and HTTPS browser padlock.",
+         "phase2_alb_https.png"),
 
         ("Phase 3: Storage (S3) &amp; CDN (CloudFront Media)",
          "Private S3 bucket (cloudscale-media-<account_id>) with versioning enabled, lifecycle transition to Standard-IA after 30 days, noncurrent version expiration after 90 days, and a dedicated CloudFront distribution with Origin Access Control (OAC).",
          "Protects against accidental deletions/overwrites, optimizes long-term storage costs for dormant photos, accelerates photo downloads globally, and guarantees no direct public S3 access.",
          "S3 Bucket policy enforces AWS:SourceArn = CloudFront distribution ARN; Public Access Block enabled (100% blocked); S3 PutObject restricted to uploads/* only for EC2 role.",
-         "S3 bucket properties showing versioning and lifecycle configuration; curl test showing CloudFront 200 OK vs direct S3 403 Forbidden."),
+         "S3 bucket properties showing versioning and lifecycle configuration; curl test showing CloudFront 200 OK vs direct S3 403 Forbidden.",
+         "phase3_s3_storage.png"),
 
         ("Phase 4: Data Layer (DynamoDB NoSQL)",
          "On-demand Amazon DynamoDB table (cloudscale-listings) with partition key listing_id (String). Private VPC Gateway Endpoint attached to private route tables.",
          "Lost-and-found items have flexible attributes (optional photos, variable notes, growing response threads) and require fast single-key lookups. On-demand billing costs zero dollars while idle.",
          "Hash Key: listing_id (S); BillingMode: PAY_PER_REQUEST; IAM policy restricts EC2 role to PutItem, GetItem, UpdateItem, Scan, DeleteItem on table ARN only.",
-         "DynamoDB console item list and VPC endpoint routing table entry."),
+         "DynamoDB console item list and VPC endpoint routing table entry.",
+         "phase4_dynamodb.png"),
 
         ("Phase 5: Identity &amp; Access (Amazon Cognito)",
          "Cognito User Pool (cloudscale-users) with self-service email sign-up and verification, hosted-UI domain, and a public app client using the OAuth 2.0 authorization code grant.",
          "Provides secure identity management without managing password hashes, salt storage, or credential resets on EC2. A public client avoids leaking client secrets in user-data.",
          "Username: email; Flow: code; Allowed scopes: openid, email; Callbacks: https://d2oszhh0246ohl.cloudfront.net/callback; Logout: https://d2oszhh0246ohl.cloudfront.net/.",
-         "Cognito Hosted UI login screen and Cognito user pool user directory table showing confirmed users."),
+         "Cognito Hosted UI login screen and Cognito user pool user directory table showing confirmed users.",
+         "phase5_cognito.png"),
 
         ("Phase 6: Web Application Architecture (Flask)",
          "Production-ready Python Flask application served via Gunicorn (2 worker processes), integrated with SSM Parameter Store for secure cookie encryption, DynamoDB for listings, and S3 for photo uploads.",
          "Delivers the end-user lost-and-found board, search filtering, session persistence across multiple EC2 instances, and responsive HTML interface.",
          "Environment passed via /etc/app.env rendered dynamically from Terraform app_env locals; Session cookies: Secure, HttpOnly, SameSite=Lax; SSM parameter /cloudscale/flask-secret-key.",
-         "Web application home page showing grid of lost/found item cards and search bar."),
+         "Web application home page showing grid of lost/found item cards and search bar.",
+         "phase6_webapp.png"),
 
         ("Phase 7: Asynchronous Serverless (Lambda, SQS, SNS)",
          "Two event-driven Lambdas: Lambda #1 (Thumbnail) triggered by S3 uploads/ with Pillow layer writing to thumbs/; SQS FIFO/Standard queue with Dead-Letter Queue (DLQ); Lambda #2 (Notifier) consuming SQS and publishing to SNS email with filter policy.",
          "Decouples slow external operations (image transcoding, email delivery) from the synchronous web request loop. If SNS fails, SQS retries up to 3 times before moving messages to DLQ.",
          "Thumbnail Lambda: Python 3.12, 512 MB, timeout 30s; SQS queue: visibility 60s, maxReceiveCount 3; Notifier Lambda: batch size 1; SNS topic: cloudscale-response-notifications.",
-         "Thumbnail generated in S3 thumbs/, SQS queue metrics, and SNS email subscription confirmation received in inbox."),
+         "Thumbnail generated in S3 thumbs/, SQS queue metrics, and SNS email subscription confirmation received in inbox.",
+         "phase7_serverless.png"),
 
         ("Phase 8: Monitoring, Telemetry &amp; Budget Controls",
          "Unified CloudWatch Dashboard (cloudscale) tracking EC2 CPU utilization, ALB RequestCount, TargetResponseTime, HealthyHostCount, and Lambda invocations/errors. CloudWatch metric alarms for high CPU and ALB 5XX errors routed to SNS alert email.",
@@ -391,7 +411,8 @@ def build_pdf_report(pdf_path):
     ))
     story.append(make_screenshot_placeholder(
         "Scaling Demonstration Evidence",
-        "EC2 ASG Monitoring tab showing CPUUtilization spiking past 50% and Activity tab displaying instances launching from 2 up to 4."
+        "EC2 ASG Monitoring tab showing CPUUtilization spiking past 50% and Activity tab displaying instances launching from 2 up to 4.",
+        image_path="scaling_demo.png"
     ))
     story.append(Spacer(1, 10))
 
@@ -410,7 +431,8 @@ def build_pdf_report(pdf_path):
     ))
     story.append(make_screenshot_placeholder(
         "Resilience & Recovery Evidence",
-        "EC2 instance console showing one instance 'Terminated' and a replacement instance 'Initializing' / 'InService', with ALB TargetGroup healthy count returning to 2."
+        "EC2 instance console showing one instance 'Terminated' and a replacement instance 'Initializing' / 'InService', with ALB TargetGroup healthy count returning to 2.",
+        image_path="failure_recovery.png"
     ))
     story.append(Spacer(1, 10))
 
@@ -495,7 +517,8 @@ def build_pdf_report(pdf_path):
     story.append(Spacer(1, 8))
     story.append(make_screenshot_placeholder(
         "AI-DLC Agent Interaction Evidence",
-        "2-3 screenshots of the AI coding assistant session demonstrating prompt-review-refine loop, human plan review, and error resolution."
+        "2-3 screenshots of the AI coding assistant session demonstrating prompt-review-refine loop, human plan review, and error resolution.",
+        image_path="aidlc_session.png"
     ))
     story.append(Spacer(1, 10))
 
@@ -544,7 +567,8 @@ def build_pdf_report(pdf_path):
     ))
     story.append(make_screenshot_placeholder(
         "Teardown Verification Evidence",
-        "Screenshot showing Terraform destroy complete, EC2 console with zero running instances, and AWS Billing zero-spend status."
+        "Screenshot showing Terraform destroy complete, EC2 console with zero running instances, and AWS Billing zero-spend status.",
+        image_path="teardown.png"
     ))
 
     # Build PDF with dynamic page numbering
@@ -635,25 +659,37 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Justification:** Eliminates single points of failure across availability zones and automatically responds to traffic surges.
 - **Configuration:** Gunicorn (`-b 0.0.0.0:8000 -w 2`), IMDSv2 metadata tokens required, zero SSH port access (managed via SSM Session Manager).
 
+![Phase 2 ALB Target Health & HTTPS Padlock](../phase2_alb_https.png)
+
 ### Phase 3: Storage (S3) & CDN (CloudFront Media)
 - **Built:** Private S3 bucket (`cloudscale-media-<account_id>`) with versioning enabled, lifecycle transition to Standard-IA after 30 days, expiration of noncurrent versions after 90 days, and CloudFront with Origin Access Control (OAC).
 - **Justification:** Versioning guards against photo loss. Standard-IA cuts dormant photo storage costs by ~40%. OAC guarantees zero public bucket access.
+
+![Phase 3 S3 Storage, Versioning & Lifecycle](../phase3_s3_storage.png)
 
 ### Phase 4: Data Layer (DynamoDB NoSQL)
 - **Built:** Amazon DynamoDB table (`cloudscale-listings`) with partition key `listing_id` (String) accessed through a VPC Gateway Endpoint.
 - **Justification:** Lost-and-found listings require single-item lookups and dynamic schemata (responses list appended over time). On-demand billing costs $0 when idle, unlike relational databases.
 
+![Phase 4 DynamoDB Table & Items](../phase4_dynamodb.png)
+
 ### Phase 5: Identity & Access (Amazon Cognito)
 - **Built:** Cognito User Pool (`cloudscale-users`) with email sign-in, self-service verification, Hosted UI domain, and a public client utilizing authorization code grant.
 - **Justification:** Secure authentication without managing user databases or password hashing on EC2. A public client eliminates storing client secrets in user-data scripts.
+
+![Phase 5 Cognito Hosted UI & Confirmed Users](../phase5_cognito.png)
 
 ### Phase 6: Web Application Architecture (Flask)
 - **Built:** Full-stack Python Flask application with Jinja2 templating, SSM-backed session management, DynamoDB integration, and S3 file uploads.
 - **Justification:** Modular, lightweight micro-framework capable of horizontal scaling across instances without sticky sessions.
 
+![Phase 6 Web Application Home & Search Interface](../phase6_webapp.png)
+
 ### Phase 7: Asynchronous Serverless (Lambda, SQS, SNS)
 - **Built:** Lambda #1 (Thumbnail) triggered by S3 uploads writing to `thumbs/`; SQS queue with Dead-Letter Queue (DLQ); Lambda #2 (Notifier) consuming SQS and publishing to SNS email with owner filter policy.
 - **Justification:** Decouples photo processing and email delivery from web responses, ensuring sub-100ms web latency. SQS retries transient delivery failures up to 3 times before DLQ.
+
+![Phase 7 S3 Thumbnail & SQS/SNS Alerts](../phase7_serverless.png)
 
 ### Phase 8: Monitoring, Telemetry & Budget Controls
 - **Built:** CloudWatch dashboard (`cloudscale`) tracking EC2 CPU, ALB latency/requests, and Lambda errors; CloudWatch metric alarms for high CPU (>70%) and ALB 5XX errors notifying SNS alerts email; AWS Budget ($100).
@@ -675,11 +711,15 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 - **Procedure:** Executed `python scripts/loadtest.py https://d2oszhh0246ohl.cloudfront.net/burn 600` (40 threads, 10 minutes).
 - **Results:** ASG average CPU crossed 50% within 3.5 minutes. CloudWatch alarm triggered horizontal scale-out from 2 to 4 instances. Upon test completion, instances scaled in back to 2 instances.
 
+![Auto Scaling Under Load Demonstration](../scaling_demo.png)
+
 ---
 
 ## 5. Resilience & Failure Recovery Demonstration
 - **Procedure:** Terminated an EC2 instance forcefully via `aws ec2 terminate-instances`.
 - **Results:** ALB target group drained connections and routed 100% of requests to the surviving instance with 0 downtime. ASG detected capacity deficit and launched a replacement instance within 4 minutes.
+
+![High Availability & EC2 Instance Recovery](../failure_recovery.png)
 
 ---
 
@@ -703,6 +743,8 @@ All 10 phases followed the ordered AI-DLC beats:
 1. **Inception:** Prompted coding assistant with scope, constraints, and questions.
 2. **Construction:** Reviewed Terraform plans and code diffs before applying; rejected insecure defaults (e.g., broad IAM `*` permissions, open SSH ports).
 3. **Operations:** Verified deployed AWS resources, tested API endpoints, and committed changes with phase tags.
+
+![AI-DLC Interaction Session](../aidlc_session.png)
 
 ---
 
@@ -730,6 +772,8 @@ terraform destroy -auto-approve
 # 3. Verify zero resources remain
 aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale
 ```
+
+![Teardown Verification](../teardown.png)
 """.format(date=datetime.now().strftime("%B %d, %Y"))
 
     with open(md_path, "w", encoding="utf-8") as f:
