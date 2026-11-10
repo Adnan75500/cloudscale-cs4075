@@ -242,7 +242,7 @@ def build_pdf_report(pdf_path):
 
     meta_table = Table([
         [Paragraph("<b>Authors / Students:</b> Adnan Ahmed &amp; Huzaifa Tahir", body_style), Paragraph("<b>Region:</b> us-east-1 (N. Virginia)", body_style)],
-        [Paragraph("<b>Application URL:</b> <a href='https://d2oszhh0246ohl.cloudfront.net'>https://d2oszhh0246ohl.cloudfront.net</a>", body_style), Paragraph("<b>IaC Framework:</b> Terraform (v1.6+)", body_style)],
+        [Paragraph("<b>Application URL:</b> <a href='https://d2cxf1oeapulob.cloudfront.net'>https://d2cxf1oeapulob.cloudfront.net</a>", body_style), Paragraph("<b>IaC Framework:</b> Terraform (v1.6+)", body_style)],
         [Paragraph("<b>Repository:</b> <a href='https://github.com/Adnan75500/cloudscale-cs4075'>https://github.com/Adnan75500/cloudscale-cs4075</a>", body_style), Paragraph("<b>Date:</b> " + datetime.now().strftime("%B %d, %Y"), body_style)]
     ], colWidths=[(letter[0]-108)/2, (letter[0]-108)/2])
     meta_table.setStyle(TableStyle([
@@ -290,7 +290,7 @@ def build_pdf_report(pdf_path):
     story.append(Spacer(1, 8))
     story.append(Paragraph(
         "<b>Walkthrough of a Request:</b><br/>"
-        "1. <b>Client Ingress &amp; Edge Delivery:</b> A user navigates to the HTTPS CloudFront URL (<font name='Courier'>https://d2oszhh0246ohl.cloudfront.net</font>). "
+        "1. <b>Client Ingress &amp; Edge Delivery:</b> A user navigates to the HTTPS CloudFront URL (<font name='Courier'>https://d2cxf1oeapulob.cloudfront.net</font>). "
         "CloudFront terminates TLS using its default edge certificate and forwards traffic over HTTP to an internal Application Load Balancer (ALB) across two public subnets.<br/>"
         "2. <b>Compute &amp; Session Management:</b> The ALB evaluates health checks (<font name='Courier'>/health</font>) and routes traffic across an Auto Scaling Group (ASG) of 2 to 4 private <font name='Courier'>t3.micro</font> EC2 instances running Gunicorn/Flask. "
         "Flask signs session cookies using an encrypted secret securely retrieved from AWS Systems Manager Parameter Store.<br/>"
@@ -344,7 +344,7 @@ def build_pdf_report(pdf_path):
         ("Phase 5: Identity &amp; Access (Amazon Cognito)",
          "Cognito User Pool (cloudscale-users) with self-service email sign-up and verification, hosted-UI domain, and a public app client using the OAuth 2.0 authorization code grant.",
          "Provides secure identity management without managing password hashes, salt storage, or credential resets on EC2. A public client avoids leaking client secrets in user-data.",
-         "Username: email; Flow: code; Allowed scopes: openid, email; Callbacks: https://d2oszhh0246ohl.cloudfront.net/callback; Logout: https://d2oszhh0246ohl.cloudfront.net/.",
+         "Username: email; Flow: code; Allowed scopes: openid, email; Callbacks: https://d2cxf1oeapulob.cloudfront.net/callback; Logout: https://d2cxf1oeapulob.cloudfront.net/.",
          "Cognito Hosted UI login screen and Cognito user pool user directory table showing confirmed users.",
          "phase5_cognito.png"),
 
@@ -522,7 +522,7 @@ def build_pdf_report(pdf_path):
     ))
     story.append(Spacer(1, 10))
 
-    # ==================== SECTION 8: LIMITATIONS ====================
+    # ==================== SECTION 8 & 9: LIMITATIONS & TEARDOWN ====================
     story.append(Paragraph("8. Architectural Limitations &amp; Production Roadmap", h1_style))
     story.append(Paragraph(
         "<b>Honest Assessment of Current Limitations:</b><br/>"
@@ -539,6 +539,38 @@ def build_pdf_report(pdf_path):
     ))
     story.append(Spacer(1, 10))
 
+    story.append(Paragraph("9. Pre-Submission Checklist &amp; Teardown Instructions", h1_style))
+    story.append(Paragraph(
+        "<b>Pre-Submission Verification Checklist:</b><br/>"
+        "&bull; <b>No AdministratorAccess:</b> Verified with <font name='Courier'>aws iam list-entities-for-policy --policy-arn arn:aws:iam::aws:policy/AdministratorAccess</font> (returns zero attached workload roles).<br/>"
+        "&bull; <b>No Secrets in Git:</b> Verified with <font name='Courier'>git log -p -S AKIA</font> and <font name='Courier'>git ls-files | findstr /i 'tfstate .env .pem'</font> (returns 0 files).<br/>"
+        "&bull; <b>Least Privilege Review:</b> All IAM policies are explicitly restricted to resource ARNs. The only two <font name='Courier'>Resource = '*'</font> statements are <font name='Courier'>ecr:GetAuthorizationToken</font> and <font name='Courier'>cloudwatch:PutMetricData</font> which AWS does not support scoping to specific resources.<br/>"
+        "&bull; <b>GitHub Collaborator &amp; Repository:</b> Instructor / TA invited and accepted on <font name='Courier'>https://github.com/Adnan75500/cloudscale-cs4075</font>.",
+        body_style
+    ))
+    story.append(make_screenshot_placeholder(
+        "Day-One Setup: Scoped Deployer IAM Access & CLI Identity",
+        "AWS STS caller identity and IAM scoped deployer user verification.",
+        image_path="aceess-key_step_1.png"
+    ))
+    story.append(Spacer(1, 8))
+    story.append(Paragraph(
+        "<b>Teardown Instructions (Run within 48 hours of grading):</b><br/>"
+        "1. Delete SageMaker Serverless Endpoint and Config to stop idle storage:<br/>"
+        "<font name='Courier'>aws sagemaker delete-endpoint --endpoint-name cloudscale-category --region us-east-1</font><br/>"
+        "<font name='Courier'>aws sagemaker delete-endpoint-config --endpoint-config-name cloudscale-category --region us-east-1</font><br/>"
+        "2. Destroy all Terraform infrastructure (ALB, ASG, VPC, CloudFront, S3, Cognito, Lambdas):<br/>"
+        "<font name='Courier'>cd terraform &amp;&amp; terraform destroy -auto-approve</font><br/>"
+        "3. Verify that zero active resources remain:<br/>"
+        "<font name='Courier'>aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale</font>",
+        body_style
+    ))
+    story.append(make_screenshot_placeholder(
+        "Teardown Verification Evidence",
+        "Screenshot showing Terraform destroy complete, EC2 console with zero running instances, and AWS Billing zero-spend status.",
+        image_path="teardown.png"
+    ))
+
     # Build PDF with dynamic page numbering
     doc.build(story, canvasmaker=NumberedCanvas)
     print(f"[OK] Successfully built PDF report: {pdf_path}")
@@ -552,7 +584,7 @@ def build_markdown_report(md_path):
 **Region:** us-east-1 (N. Virginia)  
 **IaC Framework:** Terraform (v1.6+)  
 **Repository:** [https://github.com/Adnan75500/cloudscale-cs4075](https://github.com/Adnan75500/cloudscale-cs4075)  
-**Application URL:** [https://d2oszhh0246ohl.cloudfront.net](https://d2oszhh0246ohl.cloudfront.net)  
+**Application URL:** [https://d2cxf1oeapulob.cloudfront.net](https://d2cxf1oeapulob.cloudfront.net)  
 **Date:** {date}  
 
 ---
@@ -603,7 +635,7 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 ```
 
 ### End-to-End Request Flow:
-1. **Edge Ingress:** The browser connects to `https://d2oszhh0246ohl.cloudfront.net`. CloudFront terminates TLS and forwards requests over HTTP to the ALB across two public subnets.
+1. **Edge Ingress:** The browser connects to `https://d2cxf1oeapulob.cloudfront.net`. CloudFront terminates TLS and forwards requests over HTTP to the ALB across two public subnets.
 2. **Compute Routing:** The ALB routes traffic across private `t3.micro` EC2 instances running Gunicorn/Flask. Flask retrieves its session signing secret from AWS Systems Manager Parameter Store.
 3. **Cognito Authentication:** Users authenticate via Amazon Cognito Hosted UI using OAuth 2.0 authorization code flow. Flask verifies the ID token against Cognito's JWKS.
 4. **Media Handling:** Image uploads go to S3 `uploads/`, triggering Lambda #1 to write 300px thumbnails to `thumbs/`. Images are served exclusively via CloudFront with Origin Access Control.
@@ -676,7 +708,7 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 ---
 
 ## 4. Automated Scaling Demonstration
-- **Procedure:** Executed `python scripts/loadtest.py https://d2oszhh0246ohl.cloudfront.net/burn 600` (40 threads, 10 minutes).
+- **Procedure:** Executed `python scripts/loadtest.py https://d2cxf1oeapulob.cloudfront.net/burn 600` (40 threads, 10 minutes).
 - **Results:** ASG average CPU crossed 50% within 3.5 minutes. CloudWatch alarm triggered horizontal scale-out from 2 to 4 instances. Upon test completion, instances scaled in back to 2 instances.
 
 ![Auto Scaling Under Load Demonstration](../scaling_demo.png)
@@ -720,6 +752,29 @@ All 10 phases followed the ordered AI-DLC beats:
 1. **Single NAT Instance:** Single point of failure for private egress. Future improvement: Deploy an automated failover script or multi-AZ NAT Gateway.
 2. **Plain HTTP ALB Hop:** CloudFront terminates TLS, but forwards over HTTP to the ALB. Future improvement: Purchase a domain and configure end-to-end TLS.
 3. **Synthetic Training Data:** Model trained on synthetic campus titles. Future improvement: Implement automated weekly retraining on accumulated real listings.
+
+---
+
+## 9. Pre-Submission Checklist & Teardown Instructions
+
+![Day-One Setup: Scoped Deployer Access Keys](../aceess-key_step_1.png)
+
+To prevent post-grading cloud expenditure:
+```powershell
+# 1. Delete SageMaker Serverless Endpoint
+aws sagemaker delete-endpoint --endpoint-name cloudscale-category --region us-east-1
+aws sagemaker delete-endpoint-config --endpoint-config-name cloudscale-category --region us-east-1
+
+# 2. Destroy all Terraform resources
+cd terraform
+terraform destroy -auto-approve
+
+# 3. Verify zero resources remain
+aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale
+```
+
+![Teardown Verification](../teardown.png)
+
 """.format(date=datetime.now().strftime("%B %d, %Y"))
 
     with open(md_path, "w", encoding="utf-8") as f:

@@ -11,11 +11,13 @@ sysctl --system
 
 IFACE=$(ip route show default | awk '{print $5}')
 
+systemctl enable --now iptables
+
+iptables -F FORWARD
+iptables -t nat -F
 iptables -t nat -A POSTROUTING -o "$IFACE" -j MASQUERADE
 iptables -A FORWARD -s 10.0.0.0/16 -o "$IFACE" -j ACCEPT
-iptables -A FORWARD -d 10.0.0.0/16 -i "$IFACE" \
-  -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
-iptables -P FORWARD DROP
+iptables -A FORWARD -d 10.0.0.0/16 -i "$IFACE" -m conntrack --ctstate RELATED,ESTABLISHED -j ACCEPT
+iptables -P FORWARD ACCEPT
 
-systemctl enable --now iptables
 service iptables save

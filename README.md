@@ -4,7 +4,7 @@
 **Course:** CS-4075 Cloud Computing  
 **Authors:** Adnan Ahmed & Huzaifa Tahir  
 **GitHub Repository:** [https://github.com/Adnan75500/cloudscale-cs4075](https://github.com/Adnan75500/cloudscale-cs4075)  
-**Live Application URL:** [https://d2oszhh0246ohl.cloudfront.net](https://d2oszhh0246ohl.cloudfront.net)  
+**Live Application URL:** [https://d2cxf1oeapulob.cloudfront.net](https://d2cxf1oeapulob.cloudfront.net)  
 **Project Reports:**
 - [PDF Report](docs/CloudScale_Project_Report.pdf)
 - [Markdown Report](docs/CloudScale_Project_Report.md)

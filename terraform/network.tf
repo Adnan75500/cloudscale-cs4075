@@ -157,6 +157,7 @@ resource "aws_instance" "nat" {
   subnet_id                   = aws_subnet.public[0].id
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.nat.id]
+  iam_instance_profile        = aws_iam_instance_profile.ec2.name
   source_dest_check           = false
   user_data                   = file("${path.module}/nat_userdata.sh")
 

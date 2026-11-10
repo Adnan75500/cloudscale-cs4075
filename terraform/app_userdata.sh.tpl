@@ -10,7 +10,9 @@ unzip -o app.zip -d /opt
 cd /opt/app
 
 python3.11 -m venv venv
-./venv/bin/pip install -r requirements.txt
+for i in {1..5}; do
+  ./venv/bin/pip install -r requirements.txt && break || sleep 5
+done
 
 cat > /etc/app.env <<EOF
 %{ for k, v in env ~}

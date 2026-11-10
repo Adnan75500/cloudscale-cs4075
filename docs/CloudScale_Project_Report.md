@@ -4,7 +4,7 @@
 **Region:** us-east-1 (N. Virginia)  
 **IaC Framework:** Terraform (v1.6+)  
 **Repository:** [https://github.com/Adnan75500/cloudscale-cs4075](https://github.com/Adnan75500/cloudscale-cs4075)  
-**Application URL:** [https://d2oszhh0246ohl.cloudfront.net](https://d2oszhh0246ohl.cloudfront.net)  
+**Application URL:** [https://d2cxf1oeapulob.cloudfront.net](https://d2cxf1oeapulob.cloudfront.net)  
 **Date:** November 10, 2026  
 
 ---
@@ -55,7 +55,7 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 ```
 
 ### End-to-End Request Flow:
-1. **Edge Ingress:** The browser connects to `https://d2oszhh0246ohl.cloudfront.net`. CloudFront terminates TLS and forwards requests over HTTP to the ALB across two public subnets.
+1. **Edge Ingress:** The browser connects to `https://d2cxf1oeapulob.cloudfront.net`. CloudFront terminates TLS and forwards requests over HTTP to the ALB across two public subnets.
 2. **Compute Routing:** The ALB routes traffic across private `t3.micro` EC2 instances running Gunicorn/Flask. Flask retrieves its session signing secret from AWS Systems Manager Parameter Store.
 3. **Cognito Authentication:** Users authenticate via Amazon Cognito Hosted UI using OAuth 2.0 authorization code flow. Flask verifies the ID token against Cognito's JWKS.
 4. **Media Handling:** Image uploads go to S3 `uploads/`, triggering Lambda #1 to write 300px thumbnails to `thumbs/`. Images are served exclusively via CloudFront with Origin Access Control.
@@ -128,7 +128,7 @@ Campus lost-and-found platforms exhibit unpredictable, bursty usage patterns (e.
 ---
 
 ## 4. Automated Scaling Demonstration
-- **Procedure:** Executed `python scripts/loadtest.py https://d2oszhh0246ohl.cloudfront.net/burn 600` (40 threads, 10 minutes).
+- **Procedure:** Executed `python scripts/loadtest.py https://d2cxf1oeapulob.cloudfront.net/burn 600` (40 threads, 10 minutes).
 - **Results:** ASG average CPU crossed 50% within 3.5 minutes. CloudWatch alarm triggered horizontal scale-out from 2 to 4 instances. Upon test completion, instances scaled in back to 2 instances.
 
 ![Auto Scaling Under Load Demonstration](../scaling_demo.png)
@@ -172,3 +172,26 @@ All 10 phases followed the ordered AI-DLC beats:
 1. **Single NAT Instance:** Single point of failure for private egress. Future improvement: Deploy an automated failover script or multi-AZ NAT Gateway.
 2. **Plain HTTP ALB Hop:** CloudFront terminates TLS, but forwards over HTTP to the ALB. Future improvement: Purchase a domain and configure end-to-end TLS.
 3. **Synthetic Training Data:** Model trained on synthetic campus titles. Future improvement: Implement automated weekly retraining on accumulated real listings.
+
+---
+
+## 9. Pre-Submission Checklist & Teardown Instructions
+
+![Day-One Setup: Scoped Deployer Access Keys](../aceess-key_step_1.png)
+
+To prevent post-grading cloud expenditure:
+```powershell
+# 1. Delete SageMaker Serverless Endpoint
+aws sagemaker delete-endpoint --endpoint-name cloudscale-category --region us-east-1
+aws sagemaker delete-endpoint-config --endpoint-config-name cloudscale-category --region us-east-1
+
+# 2. Destroy all Terraform resources
+cd terraform
+terraform destroy -auto-approve
+
+# 3. Verify zero resources remain
+aws resourcegroupstaggingapi get-resources --tag-filters Key=Project,Values=cloudscale
+```
+
+![Teardown Verification](../teardown.png)
+
